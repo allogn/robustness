@@ -1,0 +1,26 @@
+backups
+src/__pycache__
+notebooks/.ipynb_checkpoints
+.idea
+src/SatGreedy/cmake-build-debug
+src/SatGreedy/build
+src/SatGreedy/.idea
+src/SatGreedy/.DS_Store
+src/SatGreedy/CMakeLists.txt
+lib/
+scripts/__pycache__
+.idea
+bin
+# python scripts
+*DS_Store*
+*.idea/*
+*.pyc
+*.ipynb_checkpoints*
+lib/osmtontw/build
+gurobi.log
+lib/python3.7
+*.pytest_cache*
+*.egg-info*
+scripts/runs
+share
+*pycache*

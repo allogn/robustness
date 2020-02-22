@@ -1,0 +1,25 @@
+{
+    "data": {
+      "graph_type": "watts_strogatz",
+      "weight_scale": 0.1,
+      "both_directions": 0,
+      "random_weight": 1,
+      "p": 0.3,
+      "k": 15,
+      "n": [5000, [4000, 6000, 7000]]
+    },
+    "problem": {
+      "l": [200, [300, 400, 500]],
+      "k": [70, [10, 30, 50]],
+      "imm_solver": {
+        "Degree": {},
+        "NetShield": {},
+        "Dom": {},
+        "DomDegree": {},
+        "Random": {
+          "n": 1
+        }
+      },
+      "beta": 1
+    }
+ }

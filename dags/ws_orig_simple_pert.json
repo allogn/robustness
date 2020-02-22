@@ -1,0 +1,27 @@
+{
+    "data": {
+      "graph_type": "watts_strogatz",
+      "weight_scale": 0.3,
+      "both_directions": 0,
+      "random_weight": 0,
+      "p": 0.3,
+      "k": 15,
+      "n": 5000
+    },
+    "solver": {
+      "SatGreedy": {
+        "epsilon": 0.2,
+        "original_objective": 1
+      }
+    },
+    "problem": {
+      "l": 0,
+      "k": [50, [1, 100, 150]],
+      "imm_solver": {
+        "RandPert": {
+          "n": 20
+        }
+      },
+      "beta": 2
+    }
+ }

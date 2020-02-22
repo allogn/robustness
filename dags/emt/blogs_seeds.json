@@ -1,0 +1,24 @@
+{
+	"data": {
+		"graph_type": "blogs",
+		"weight_scale": 0.3,
+		"random_weight": 1
+	},
+
+	"solver": {
+    	  "Rob": {
+      		"mode": [0, 5],
+		"beta": 100
+    	  },
+	  "SatGreedy": {
+		"satgreedy": 0,
+		"singlegreedy": 0,
+		"singlegreedycelf": 1,
+		"allgreedy": 0
+ 	  }
+	},
+	"problem": {
+		"seeds": [30, [10, 50, 70, 90]]
+	},
+	"full_rerun": 1
+}

@@ -1,0 +1,14 @@
+{
+	"data": {
+		"graph_type": "powerlaw_cluster",
+		"both_directions": 1,
+		"weight_scale": 0.3,
+		"n": [1000, [500, 2000, 3000, 5000]],
+		"p": 0.4,
+		"mm": 10
+		},
+	"strategy": {
+		"NetShield": {}
+	},
+	"full_rerun": 1 
+}

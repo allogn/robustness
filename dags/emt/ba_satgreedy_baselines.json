@@ -1,0 +1,22 @@
+{
+	"data": {
+		"graph_type": "powerlaw_cluster",
+		"both_directions": 1,
+		"weight_scale": 0.3,
+		"n": [500, [700, 900, 1100, 1300, 1500]],
+		"p": 0.4,
+		"mm": 10
+		},
+	"solver": {
+		"SatGreedy": {
+			"epsilon": 0.15,
+			"original_objective": 0,
+			"gamma": 0.1,
+			"strict": 0,
+			"mc_iterations": 3000,
+			"all_solvers": 1,
+			"seeds": 1
+		}
+	},
+	"full_rerun": 1
+}

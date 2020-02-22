@@ -1,0 +1,24 @@
+{
+	"data": {
+		"graph_type": "powerlaw_cluster",
+		"both_directions": 1,
+		"weight_scale": 0.3,
+		"n": [1000, [500, 2000, 3000, 5000]],
+		"p": 0.4,
+		"mm": 10
+		},
+	"strategy": {
+		"Degree": {}
+	},
+	"solver": {
+	 "Rob": {
+		"mode": [1,2,3,4,5,6],
+		"iterations":10,
+		"number_of_blocked_nodes": -1
+		}
+	},
+	"problem": {
+		"seeds": 1
+	},
+	"full_rerun": 1 
+}

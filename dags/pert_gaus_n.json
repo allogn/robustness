@@ -1,0 +1,26 @@
+{
+    "data": {
+      "graph_type": "gaussian_random_partition",
+      "weight_scale": 0.1,
+      "random_weight": 1,
+      "n": 5000,
+      "s": 100,
+      "v": 0.5,
+      "p_in": 0.02,
+      "p_out": 0.0005
+    },
+    "solver": {
+      "SatGreedy": {
+        "original_objective": 1
+      }
+    },
+    "problem": {
+      "l": 0,
+      "k": [100, [200, 300, 400]],
+      "imm_solver": {
+        "RandPert": {
+          "n": 30
+        }
+      }
+    }
+ }

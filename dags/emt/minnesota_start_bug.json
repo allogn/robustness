@@ -1,0 +1,23 @@
+{
+	"data": {
+		"graph_type": "minnesota",
+		"both_directions": 1,
+		"weight_scale": 0.9,
+		"random_weights": 1
+		},
+	"solver": {
+		"Rob": {
+			"mode": 5,
+			"iterations": 200,
+			"number_of_blocked_nodes": 0
+		}
+	},
+	"strategy": {
+		"Degree": {},
+		"Aquaintance": {}
+	},
+	"problem": {
+		"seeds": 50
+	},
+	"full_rerun": 1
+}

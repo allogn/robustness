@@ -1,0 +1,22 @@
+{
+	"data": {
+				"graph_type": "gaussian_random_partition",
+	      "weight_scale": 0.3,
+	      "random_weight": 1,
+	      "n": [2500, [1000, 4000, 5500]],
+	      "s": [100, [50, 150, 200]],
+	      "v": 0.9,
+	      "p_in": [0.05, [0.01, 0.1, 0.15]],
+	      "p_out": [0.0005, [0.0001, 0.0009, 0.0014]]
+	},
+  "solver": {
+		"Rob": {
+		  "mode": [0, 5]
+		},
+		"SatGreedy": {}
+  },
+	"problem": {
+		"seeds": 10
+	},
+	"full_rerun": 1
+}

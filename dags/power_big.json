@@ -1,0 +1,24 @@
+{
+  "data": {
+    "graph_type": "powerlaw_cluster",
+    "weight_scale": 0.1,
+    "both_directions": 1,
+    "random_weight": 1,
+    "n": [5000, [1000, 3000, 7000]],
+    "p": 0.4,
+    "m": 2
+  },
+  "problem": {
+    "l": [50, [10, 90, 130]],
+    "k": [100, [50, 150, 200]],
+    "imm_solver": {
+      "Degree": {},
+      "NetShield": {},
+      "Dom": {},
+      "DomDegree": {},
+      "Random": {
+        "n": 1
+      }
+    }
+  }
+}

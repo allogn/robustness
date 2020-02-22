@@ -1,0 +1,24 @@
+{
+	    "data": {
+		    "graph_type": "blogs",
+		    "weight_scale": 0.1,
+		    "random_weights": 1
+	    },
+
+	    "solver": {
+		      "SatGreedy": {
+			         }
+	    },
+	    "problem": {
+		    "seeds": 10
+	    },
+	        "strategy": {
+			      "Degree": {},
+			            "NetShield": {},
+				          "Random": {
+						          "random_id": 1
+							        }
+								    },
+								    "full_rerun": 1,
+								        "graph_analysis": 0
+}

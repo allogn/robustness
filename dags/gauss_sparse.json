@@ -1,0 +1,31 @@
+{
+    "data": {
+      "graph_type": "gaussian_random_partition",
+      "weight_scale": [0.1, [0.5]],
+      "random_weight": 1,
+      "n": 10000,
+      "s": [200,[100,400]],
+      "v": 0.4,
+      "p_in": [0.005, [0.001, 0.01]],
+      "p_out": [0.0005,[0.0001, 0.001]]
+    },
+    "solver": {
+      "SatGreedy": {
+        "epsilon": 0.2,
+        "gamma": 0.0001
+      }
+    },
+    "problem": {
+      "l": [300, [1, 90, 270, 400]],
+      "k": [300, [10, 170, 500]],
+      "imm_solver": {
+        "Degree": {},
+        "NetShield": {},
+        "Dom": {},
+        "DomDegree": {},
+        "Random": {
+          "n": 1
+        }
+      }
+    }
+ }

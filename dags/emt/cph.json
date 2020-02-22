@@ -1,0 +1,17 @@
+{
+	"data": {
+		"graph_type": "cph",
+		"weight_scale": 0.1,
+		"random_weight": 1
+	},
+	"solver": {
+		"Rob": {
+			"mode": [0,5]
+		}
+	},
+	"problem": {
+		"seeds": 100,
+		"alpha": 1.1
+	},
+	"full_rerun": 0
+}

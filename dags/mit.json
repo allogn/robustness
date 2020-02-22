@@ -1,0 +1,22 @@
+{
+  "data": {
+    "graph_type": "mit",
+    "weight_scale": 0.03,
+    "random_weight": 1,
+    "n": 6403
+  },
+  "problem": {
+    "l": [100, [10, 190, 280]],
+    "k": [10, [2, 18, 26]],
+    "imm_solver": {
+      "Degree": {},
+      "NetShield": {},
+      "Dom": {},
+      "DomDegree": {},
+      "Random": {
+        "n": 1
+      }
+    },
+    "beta": 2
+  }
+}

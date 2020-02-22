@@ -1,0 +1,21 @@
+{
+	"data": {
+		"graph_type": "dblp",
+		"weight_scale": [0.1, [0.3,0.5,0.7,0.9]],
+		"random_weight": 1
+	},
+	"solver": {
+		"Rob": {
+			"mode": [0,5],
+			"beta": 40
+		},
+		"SatGreedy": {
+			"dimbeta": 40
+		}
+	},
+	"problem": {
+		"seeds": 50,
+		"alpha": 1.075
+	},
+	"full_rerun": 1
+}

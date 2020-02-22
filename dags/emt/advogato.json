@@ -1,0 +1,19 @@
+{
+	"data": {
+		"graph_type": "advogato",
+		"weight_scale": 0.5,
+		"random_weight": 1
+		},
+	"solver": {
+		"SatGreedy": {
+		},
+		"Rob": {
+			"mode": [0,5]
+		}
+	},
+	"problem": {
+		"seeds": 100,
+		"alpha": 1.075
+	},
+	"full_rerun": 1
+}

@@ -1,0 +1,26 @@
+{
+	"data": {
+		"graph_type": "powerlaw_cluster",
+		"both_directions": 1,
+		"weight_scale": 0.1,
+		"random_weight": 0,
+		"n": [256, [512, 1024, 2048, 4096]],
+		"p": 0.9,
+		"mm": 20
+		},
+	"problem": {
+		"seeds": 30,
+		"alpha": 1.075
+	},
+	"solver": {
+		"Rob": {
+			"mode": [0,5,6],
+			"beta": 50
+		},
+		"SatGreedy": {
+			"gamma": 0.01,
+			"dimbeta": 50
+		}
+	},
+	"full_rerun": 1
+}

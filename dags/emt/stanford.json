@@ -1,0 +1,17 @@
+{
+	"data": {
+		"graph_type": "stanford",
+		"weight_scale": 0.1,
+		"random_weight": 1
+	},
+	"solver": {
+		"SatGreedy": {
+			"dimbeta": 20
+		}
+	},
+	"problem": {
+		"seeds": 100,
+		"alpha": 1.3
+	},
+	"full_rerun": 0
+}

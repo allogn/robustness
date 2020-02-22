@@ -1,0 +1,17 @@
+{
+	"data": {
+		"graph_type": "minnesota",
+		"both_directions": 1,
+		"weight_scale": [0.1, [0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]],
+		"random_weight": 0
+		},
+	"solver": {
+		"Rob": {
+			"mode": [0,5]
+		}
+	},
+	"problem": {
+		"seeds": 10
+	},
+	"full_rerun": 1
+}

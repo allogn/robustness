@@ -1,0 +1,18 @@
+{
+	"data": {
+		"graph_type": "vk"
+	},
+	"solver": {
+    	  "Rob": {
+      		"mode": [0, 5],
+		"beta": 60
+    	  },
+	  "SatGreedy": {
+	  	"dimbeta": 60
+	  }
+	},
+	"problem": {
+		"seeds": [10, [1, 20, 30, 40, 50]]
+	},
+	"full_rerun": 1
+}

@@ -1,0 +1,45 @@
+{
+    "tag": "default",
+    "data": {
+      "graph_type": "path",
+      "weight_scale": 0.5,
+      "random_weight": 0,
+      "both_directions": 0,
+      "n": 10
+    },
+    "solver": {
+      "Rob": {
+        "mode": [0, 5],
+        "iterations": 100,
+        "number_of_blocked_nodes": -1,
+        "beta": 32
+      },
+      "SatGreedy": {
+        "epsilon": 0.2,
+        "gamma": 0.1,
+        "satgreedy": 0,
+        "singlegreedy": 0,
+        "singlegreedycelf": 1,
+        "allgreedy": 0,
+        "dimbeta": 32
+      }
+    },
+    "strategy": {
+      "Degree": {},
+      "NetShield": {},
+      "Random": {
+        "random_id": 1
+      },
+      "Pagerank": {},
+      "Katz": {},
+      "Aquaintance": {},
+      "Betweenness": {}
+    },
+    "problem": {
+      "seeds": 2,
+      "alpha": 1
+    },
+    "full_rerun": 1,
+    "graph_analysis": 1,
+    "solver_execution_timeout": 86400
+}

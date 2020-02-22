@@ -1,0 +1,11 @@
+{
+	"data": {
+		"graph_type": "powerlaw_cluster",
+		"both_directions": 1,
+		"weight_scale": 0.3,
+		"n": 300,
+		"p": 0.2,
+		"mm": 2
+	},
+	"full_rerun": 1
+}

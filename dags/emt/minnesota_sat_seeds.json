@@ -1,0 +1,18 @@
+{
+	"data": {
+		"graph_type": "minnesota",
+		"both_directions": 1,
+		"weight_scale": [0.5, [0.1, 0.3, 0.6, 0.7, 0.75, 0.8, 0.85, 0.9]],
+		"random_weight": 1
+		},
+	"solver": {
+		"SatGreedy": {},
+		"Rob": {
+			"mode": [0,5]
+		}
+	},
+	"problem": {
+		"seeds": [50, [1, 10, 25, 75, 100]]
+	},
+	"full_rerun": 1
+}

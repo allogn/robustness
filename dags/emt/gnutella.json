@@ -1,0 +1,18 @@
+{
+	"data": {
+		"graph_type": "gnutella",
+		"weight_scale": 0.5,
+		"random_weight": 1
+	},
+	"solver": {
+		"Rob": {
+			"mode": [0,5]
+		},
+		"SatGreedy": {}
+	},
+	"problem": {
+		"seeds": 100,
+		"alpha": 1.075
+	},
+	"full_rerun": 1
+}
