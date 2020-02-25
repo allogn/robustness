@@ -1,8 +1,8 @@
 import unittest
-from src.Analyst import *
+from src.Analyzer import *
 from src.Experiment import *
 
-class TestAnalyst(unittest.TestCase):
+class TestAnalyzer(unittest.TestCase):
 
     def setUp(self):
         pass
@@ -14,7 +14,7 @@ class TestAnalyst(unittest.TestCase):
     def test_default_experiment_loading(self):
         experiment = Experiment()
         experiment.run()
-        analyst = Analyst(experiment.pm.get("tag"))
+        analyst = Analyzer(experiment.pm.get("tag"))
 
     @unittest.skip
     def test_set_results(self):

@@ -61,7 +61,7 @@ class NetShieldSolver(Solver):
     def net_shield(self):
         t1 = time.time()
         A = nx.to_scipy_sparse_matrix(self.G.to_undirected())
-        vals, vecs = eigs(A, k=1, which='LR')
+        vals, vecs = eigs(A.astype(float), k=1, which='LR')
         max_eig = np.real(vals[0])
         max_eigvec = np.real(vecs[:,0].reshape((vecs.shape[0],)))
 

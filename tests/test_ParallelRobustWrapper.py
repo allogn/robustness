@@ -1,4 +1,5 @@
 import unittest
+import numpy as np
 from src.ParallelRobustWrapper import *
 
 class TestSolver(unittest.TestCase):
@@ -6,5 +7,4 @@ class TestSolver(unittest.TestCase):
         np.random.seed(seed=123)
 
     def test_workflow(self):
-        rw = ParallelRobustWrapper()
-        
+        rw = ParallelRobustWrapper("test")
