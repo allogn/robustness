@@ -9,12 +9,10 @@ from bson.objectid import ObjectId
 from Database import *
 
 class MongoDatabase(Database):
-    MONGO_USER = "robustExpUser"
-    MONGO_PASS = "0zXd9q2pLbf8qRt3"
 
     def __init__(self, tag="tmp"):
         #constr = "mongodb+srv://{}:{}@cluster0-gmsw0.mongodb.net/test?retryWrites=true&w=majority&ssl=true&ssl_cert_reqs=CERT_NONE".format(self.MONGO_USER, self.MONGO_PASS)
-        constr = "mongodb://127.0.0.1:27018/admin"
+        constr = "mongodb://127.0.0.1:27017/admin"
         self.client = pymongo.MongoClient(constr, serverSelectionTimeoutMS=60000)
         self.db = self.client.robustExperimentsDB
         logging.debug("Connected to MongoDB")
