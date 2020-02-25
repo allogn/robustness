@@ -49,6 +49,6 @@ for graph in db.graphs.find({"tag": tag}):
         nx.write_gpickle(G, graph['pickle_path'])
         gen = Generator({})
         gen.save_to_adjlist(tag, G)
-        db.graphs.update_one({'_id': graph['_id']}, {'$set': {'n': n_default, 'delta': delta}})
+        db.graphs.update_one({'_id': graph['_id']}, {'$set': {'n': n_default, 'delta': delta, 'm': G.number_of_edges()}})
 
 experiment.run_seeding()
