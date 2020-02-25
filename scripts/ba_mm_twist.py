@@ -27,6 +27,9 @@ params = {
         "mode": [0,4],
         "number_of_blocked_nodes": 0
       }
+    },
+    "problem": {
+      "seeds": 1
     }
 }
 experiment = Experiment(params)
