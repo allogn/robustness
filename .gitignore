@@ -6,7 +6,6 @@ src/SatGreedy/cmake-build-debug
 src/SatGreedy/build
 src/SatGreedy/.idea
 src/SatGreedy/.DS_Store
-src/SatGreedy/CMakeLists.txt
 lib/
 scripts/__pycache__
 .idea

@@ -52,6 +52,9 @@ int main(int argn, char **argv) {
       if (ss.find("-adversary") != std::string::npos)
           arg.adversaries.push_back(argv[i + 1]);
 
+      /*
+       * Number of blocked nodes. Set to -1 for evaluation of all values of l.
+       */
       if (argv[i] == string("-l"))
           arg.number_of_blocked_nodes = atoi(argv[i + 1]);
 

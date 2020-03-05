@@ -27,7 +27,7 @@ int main(int argn, char **argv) {
             ("seeds,s", po::value<int>(&seeds)->default_value(1), "Seeds")
             ("sampling,c", po::value<double>(&sampling)->default_value(1), "Sample number of blocked nodes")
             ("blocked,l", po::value<int>(&number_of_blocked_nodes)->default_value(-1), "Number of blocked nodes")
-            ("mode,m", po::value<int>(&mode)->default_value(3), "0 - Largest Component, 1 - MaxTree, 2 - FastMaxTree, 3 - DownUpTree, 4 - DynTree")
+            ("mode,m", po::value<int>(&mode)->default_value(3), "0 - Largest Component, 1 - MaxTree, 2 - FastMaxTree, 3 - DownUpTree, 4 - DynTree, 5 - DAGGER, 6 - DAGGER Bit")
             ("adversary,a", po::value<std::string>(&adv_file)->required(), "File with sorted list of adversaries");
 
     po::variables_map vm;

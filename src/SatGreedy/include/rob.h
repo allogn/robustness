@@ -649,7 +649,7 @@ public:
         if ((sampling_of_blocked_nodes > 1) && (number_of_blocked_nodes != -1)) {
             throw std::runtime_error("number_of_blocked_nodes and sampling_of_blocked_nodes can not be both true");
         }
-        
+
         cpu_timer timer;
         reset();
         double time_for_node_insertion = 0;
@@ -659,7 +659,7 @@ public:
             reset_iteration();
             if (mode == LARGEST_COMPONENT || mode == DFS_MAX_TREE || mode == TOPDOWN_MAX_TREE || mode == BOTUP_MAX_TREE) {
                 if (number_of_seeds > 1) {
-                    throw std::runtime_error("Not implemented");
+                    throw std::runtime_error("Several seeds are not implemented for 4 modes");
                 }
                 int low = 0;
                 int high = g.n;
@@ -696,7 +696,7 @@ public:
                 build_active_edges();
                 if (mode == DYN_BOTUP_MAX_TREE) {
                     if (number_of_seeds > 1) {
-                        throw std::runtime_error("Not implemented");
+                        throw std::runtime_error("DYN_BOTUP_MAX_TREE for seeds>1 Not implemented");
                     }
                     int max_number_of_blocked_nodes = (number_of_blocked_nodes > -1) ? number_of_blocked_nodes : g.n-1;
                     rebuild_mydag();

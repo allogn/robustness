@@ -49,7 +49,7 @@ public:
 	double objective;
 	double cmax;
 	sfmt_t sfmtSeed;
-	bool dyn_mode;
+	bool dyn_mode; // dyn_mode is the mode when objective is evaluated for all sequence of blocked nodes. Set blocked_nodes=-1 for this mode 
 
 	SatGreedy(Argument arg): Solver(arg) {
 		sfmt_init_gen_rand(&sfmtSeed , 95082);
@@ -562,84 +562,83 @@ public:
         run_solver_mapping(solvername);
 	}
 
-	void run_all(std::vector<std::string> solvers = std::vector<std::string>({"satgreedy", "all_greedy", "single_greedy_celf", "single_greedy"})) {
+	void run_all(std::vector<std::string> solvers =
+		std::vector<std::string>({"satgreedy", "all_greedy", "single_greedy_celf", "single_greedy"}))
+	{
 		cpu_timer total_timer;
 		init();
 		if (dyn_mode) {
-            std::unordered_map<std::string,std::vector<double>> objectives;
-            double adding_nodes_time = 0;
-            std::unordered_map<std::string, double> solver_times;
-
+      std::unordered_map<std::string,std::vector<double>> objectives;
+      double adding_nodes_time = 0;
+      std::unordered_map<std::string, double> solver_times;
 
 			std::vector<int> node_values_to_sample = blocked_nodes_values(arg.blocked_nodes_sampling_coef, g.n);
 			unsigned long visited_blocked_node_index = node_values_to_sample.size()-1;
 			logging["samples_blocked_values"] = node_values_to_sample;
 
-            for (auto& s : solvers) {
-                solver_times[s] = 0;
-                objectives[s] = std::vector<double>(node_values_to_sample.size());
-            }
+      for (auto& s : solvers) {
+          solver_times[s] = 0;
+          objectives[s] = std::vector<double>(node_values_to_sample.size());
+      }
 
+      for (int added_nodes = 0; added_nodes < g.n; added_nodes++) {
+      	VERBOSE_INFO(">>> STARTING ", added_nodes);
 
-            for (int added_nodes = 0; added_nodes < g.n; added_nodes++) {
-            	VERBOSE_INFO(">>> STARTING ", added_nodes);
-
-            	bool sample_this_value = false;
-            	assert(visited_blocked_node_index >= 0);
-            	if (g.n-added_nodes-1 == node_values_to_sample[visited_blocked_node_index]) {
-            		sample_this_value = true;
+      	bool sample_this_value = false;
+      	assert(visited_blocked_node_index >= 0);
+      	if (g.n-added_nodes-1 == node_values_to_sample[visited_blocked_node_index]) {
+      		sample_this_value = true;
 					visited_blocked_node_index--;
-            	}
+      	}
 
-                cpu_timer timer;
-                for (auto& a : adversaries) {
-                    a.add_one_node();
-                }
-                adding_nodes_time += timer.elapsed().user;
+        cpu_timer timer;
+        for (auto& a : adversaries) {
+            a.add_one_node();
+        }
+        adding_nodes_time += timer.elapsed().user;
 
-                if (sample_this_value) {
-					for (auto& s : solvers) {
-						cpu_timer timer;
-
-						if (added_nodes <= max_S) {
-							objective = 0;
-							S.clear();
-						} else {
-							run_solver(s, added_nodes);
-						}
-						if ((added_nodes == max_S+1) && (objective > 0)) {
-							logging[s]["error"] = "Solver does not converge to 0 for S=max_S. Such case not implemented";
-							std::cout << "Solver does not converge to 0 for S=max_S. Such case not implemented" << std::endl;
-//                        throw std::runtime_error("Solver does not converge to 0 for S=max_S. Such case not implemented");
-						}
+        if (sample_this_value) {
+				for (auto& s : solvers) {
+					cpu_timer timer;
+					if (added_nodes <= max_S) {
+						objective = 0;
+						S.clear();
+					} else {
+						run_solver(s, added_nodes);
+					}
+					if ((added_nodes == max_S+1) && (objective > 0)) {
+						logging[s]["error"] = "Solver does not converge to 0 for S=max_S. Such case not implemented";
+						std::cout << "Solver does not converge to 0 for S=max_S. Such case not implemented" << std::endl;
+		//                        throw std::runtime_error("Solver does not converge to 0 for S=max_S. Such case not implemented");
+					}
 
 						logging[s]["objective_per_adversary"][visited_blocked_node_index+1] = get_obj_for_set_per_adversary(S);
 						solver_times[s] = solver_times[s] + timer.elapsed().user;
 						objectives[s][visited_blocked_node_index+1] = objective;
 					}
-                }
-            }
-            for (auto& s : solvers) {
-                logging[s]["objectives"] = objectives[s];
-                logging[s]["time"] = solver_times[s];
-            }
-            logging["dim_time"] = adding_nodes_time;
+        }
+      }
+      for (auto& s : solvers) {
+          logging[s]["objectives"] = objectives[s];
+          logging[s]["time"] = solver_times[s];
+      }
+      logging["dim_time"] = adding_nodes_time;
 
 		} else {
-		    cpu_timer timer;
-            collect_rr();
-            logging["rr_collection"] = timer.elapsed().user;
+	    cpu_timer timer;
+      collect_rr();
+      logging["rr_collection"] = timer.elapsed().user;
 
-            for (auto& s : solvers) {
-                run_solver(s, 0);
-                logging[s]["time"] = timer.elapsed().user;
-                logging[s]["seeds"] = S;
-                logging[s]["objective"] = objective;
-            }
+      for (auto& s : solvers) {
+          run_solver(s, 0);
 
+          logging[s]["time"] = timer.elapsed().user;
+          logging[s]["seeds"] = S;
+          logging[s]["objective"] = objective;
+      }
 		}
 		logging["runtime"] = total_timer.elapsed().user;
-        save_log();
+    save_log();
 	}
 
 
