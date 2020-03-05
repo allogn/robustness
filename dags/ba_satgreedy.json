@@ -20,19 +20,19 @@
     }
   },
   "solver": {
-	  "Rob": {
-  		"mode": -1
-	  },
+	  "Imm": {
+      "epsilon": 0.2
+    },
 	  "SatGreedy": {
-		  "satgreedy": 1,
-		  "singlegreedy": 1,
+		  "satgreedy": 0,
+		  "singlegreedy": 0,
 		  "singlegreedycelf": 1,
-		  "allgreedy": 1
+		  "allgreedy": 0
 	  }
   },
   "problem": {
-	   "seeds": [10, [7, 12, 15]],
-     "number_of_blocked_nodes": [1, [2]]
+	   "seeds": [10, [7]],
+     "number_of_blocked_nodes": 1
   },
   "full_rerun": 1
 }

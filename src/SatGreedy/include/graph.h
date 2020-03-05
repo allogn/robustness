@@ -50,7 +50,7 @@ public:
     {
         ifstream cin((folder + "/attributes.txt").c_str());
         if(!cin) {
-            std::cout << "Input file does not exist." << std::endl;
+            std::cout << "Input file " << folder << " does not exist." << std::endl;
             exit(1);
         };
         string s;

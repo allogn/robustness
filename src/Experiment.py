@@ -138,13 +138,83 @@ class Experiment:
         if self.verbose:
             t.close()
 
+    def run_satgreedy(self, seeding_parameters):
+        q = {"tag": self.tag}
+        graph_to_imm = {}
+        for immunization in self.db.immunization.find(q):
+            graph_info = self.db.graphs.find_one(immunization['graph'])
+            id = graph_info['_id']
+            if id not in graph_to_imm:
+                graph_to_imm[id] = (graph_info, [])
+            graph_to_imm[id][1].append(immunization['solution_path'])
+
+        for graph_id in graph_to_imm:
+            graph = graph_to_imm[graph_id][0]
+
+            solvers = ["singlegreedy", "singlegreedycelf", "allgreedy", "satgreedy"]
+            active_solvers = []
+            for s in solvers:
+                if seeding_parameters[s] == 1:
+                    active_solvers.append(s)
+
+            self.pw.add_satgreedy(graph['adjlist_path'], graph['_id'], seeding_parameters['epsilon'],
+                                  graph_to_imm[graph_id][1], seeding_parameters['gamma'], seeding_parameters['seeds'],
+                                  seeding_parameters['number_of_blocked_nodes'], active_solvers, seeding_parameters['dimbeta'], seeding_parameters['alpha'])
+                                  # todo just single seed for now
+
+    def run_rob(self, seeding_parameters):
+        q = {"tag": self.tag}
+        for immunization in self.db.immunization.find(q):
+            graph_info = self.db.graphs.find_one(immunization['graph'])
+            g_dir = graph_info['adjlist_path']
+            self.pw.add_rob(g_dir, immunization, seeding_parameters['iterations'],
+                            seeding_parameters['mode'], seeding_parameters['number_of_blocked_nodes'],
+                            seeding_parameters['seeds'], seeding_parameters['alpha'])
+
+    def run_dyn_imm(self, seeding_parameters):
+        q = {"tag": self.tag}
+        for immunization in self.db.immunization.find(q):
+            graph_info = self.db.graphs.find_one(immunization['graph'])
+            g_dir = graph_info['adjlist_path']
+            logging.info("Adding simple DIM to schedule")
+            self.pw.add_dyn_imm(g_dir, immunization, seeding_parameters['beta'],
+                                seeding_parameters['seeds'], seeding_parameters['alpha'])
+
+    def run_imm_simulation(self, seeding_parameters):
+        for immunization in self.db.immunization.find({"tag": self.tag}):
+            graph_info = self.db.graphs.find_one(immunization['graph'])
+            for seeds in self.db.simple_seeding.find({"graph_id": graph_info['_id']}):
+                self.pw.add_simulation(graph_info['adjlist_path'], seeds['out_file_seeds_only'], immunization)
+
+    def run_simple_seeding(self):
+        all_params = list(self.pm.get_hyperparam_sets())
+        for seeding_parameters in all_params:
+            if seeding_parameters['solver'] == "Imm" and seeding_parameters['number_of_blocked_nodes'] > -1:
+                for graph_info in self.db.graphs.find({"tag": self.tag}):
+                    graph_dir = graph_info['adjlist_path']
+                    out_file = os.path.join(self.fm.get_data_path(), str(uuid.uuid4()) + ".json")
+                    out_file_seeds_only = os.path.join(self.fm.get_data_path(), str(uuid.uuid4()) + ".csv")
+                    imm_cmd = self.pw.get_cmd_imm(graph_dir, out_file, seeding_parameters['epsilon'], seeding_parameters['seeds'])
+                    t = time.time()
+                    self.pw.run_cmd(imm_cmd,False,ParallelRobustWrapper.TIMEOUT)
+                    t = time.time() - t
+                    result = json.load(open(out_file, "r"))
+                    result['out_file'] = out_file
+                    result['out_file_seeds_only'] = out_file_seeds_only
+                    with open(out_file_seeds_only, 'w') as f:
+                        for s in result['imm']['seeds']:
+                            f.write(str(s) + "\n")
+                    result['imm_cmd'] = imm_cmd
+                    result['runtime'] = t
+                    result['epsilon'] = seeding_parameters['epsilon']
+                    result['number_of_seeds'] = seeding_parameters['seeds']
+                    result['graph_id'] = graph_info['_id']
+                    self.db.simple_seeding.insert_one(result)
+
     def run_seeding(self, force=False):
         q = {"tag": self.tag}
         if force:
             self.db.seeding.delete_many(q)
-        #if self.db.seeding.find_one({'tag': self.tag}) != None:
-        #    logging.info("Seeding for {} has been found".format(self.tag))
-        #    return
         all_params = list(self.pm.get_hyperparam_sets())
         for seeding_parameters in all_params:
             total_immunizators = self.db.immunization.count_documents(q)
@@ -152,44 +222,13 @@ class Experiment:
                 raise Exception("No immunizers found")
 
             if seeding_parameters['solver'] == "SatGreedy":
-                graph_to_imm = {}
-                for immunization in self.db.immunization.find(q):
-                    graph_info = self.db.graphs.find_one(immunization['graph'])
-                    id = graph_info['_id']
-                    if id not in graph_to_imm:
-                        graph_to_imm[id] = (graph_info, [])
-                    graph_to_imm[id][1].append(immunization['solution_path'])
-
-                for graph_id in graph_to_imm:
-                    graph = graph_to_imm[graph_id][0]
-
-                    solvers = ["singlegreedy", "singlegreedycelf", "allgreedy", "satgreedy"]
-                    active_solvers = []
-                    for s in solvers:
-                        if seeding_parameters[s] == 1:
-                            active_solvers.append(s)
-
-                    self.pw.add_satgreedy(graph['adjlist_path'], graph['_id'], seeding_parameters['epsilon'],
-                                          graph_to_imm[graph_id][1], seeding_parameters['gamma'], seeding_parameters['seeds'],
-                                          seeding_parameters['number_of_blocked_nodes'], active_solvers, seeding_parameters['dimbeta'], seeding_parameters['alpha'])
-                                          # todo just single seed for now
-                continue
-
-            for immunization in self.db.immunization.find(q):
-                graph_info = self.db.graphs.find_one(immunization['graph'])
-                g_dir = graph_info['adjlist_path']
-                if seeding_parameters['mode'] == -1:
-                    if seeding_parameters['number_of_blocked_nodes'] == -1:
-                        logging.info("Adding simple DIM to schedule")
-                        self.pw.add_dyn_imm(g_dir, immunization, seeding_parameters['beta'],
-                                            seeding_parameters['seeds'], seeding_parameters['alpha'])
-                    else: # ignore number of blocked nodes
-                        logging.info("Adding simple IMM to schedule (no nodes to be blocked)")
-                        self.pw.add_imm(g_dir, immunization, seeding_parameters['seeds'])
-                else:
-                    self.pw.add_rob(g_dir, immunization, seeding_parameters['iterations'],
-                                    seeding_parameters['mode'], seeding_parameters['number_of_blocked_nodes'],
-                                    seeding_parameters['seeds'], seeding_parameters['alpha'])
+                self.run_satgreedy(seeding_parameters)
+            if seeding_parameters['solver'] == "Rob":
+                self.run_rob(seeding_parameters)
+            if seeding_parameters['solver'] == "Imm" and seeding_parameters['number_of_blocked_nodes'] == -1:
+                self.run_dyn_imm(seeding_parameters)
+            if seeding_parameters['solver'] == "Imm" and seeding_parameters['number_of_blocked_nodes'] > -1:
+                self.run_imm_simulation(seeding_parameters)
         self.pw.run_parallel()
         # solvers save in json file, wrapper loads and moves to mongo database
 
@@ -197,6 +236,8 @@ class Experiment:
         logging.info("============================ NEW EXPERIMENT ===============================")
         generated = self.generate_datasets()
         logging.info("Dataset of {} graph generated".format(generated))
+        self.run_simple_seeding()
+        logging.info("Simple Seeding completed")
         self.run_immunization()
         logging.info("Immunization completed")
         self.run_seeding()

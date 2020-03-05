@@ -82,7 +82,7 @@ class RobustWrapper:
         assert(beta > 1);
         return [ os.path.join(RobustWrapper.BIN_PATH,'Imm'),
                 '-d', graph_dir,
-                '-e', str(beta), # epsilon for imm, but beta for dyn imm
+                '-e', str(beta),
                 '-m', '0',
                 '-c', str(alpha),
                 '-s', str(seeds),
@@ -91,10 +91,18 @@ class RobustWrapper:
 
 
     @staticmethod
-    def get_cmd_imm(graph_dir, out_file, beta, seeds):
-        assert(beta < 1);
+    def get_cmd_imm(graph_dir, out_file, epsilon, seeds):
+        assert(epsilon < 1);
         return [ os.path.join(RobustWrapper.BIN_PATH,'Imm'),
                 '-d', graph_dir,
                 '-s', str(seeds),
-                '-e', str(beta), # epsilon for imm, but beta for dyn imm
+                '-e', str(epsilon),
                 '-o', out_file]
+
+    @staticmethod
+    def get_cmd_simulation(graph_dir, seed_file, iterations, outfile):
+        return [ os.path.join(RobustWrapper.BIN_PATH,'Simulator'),
+                '-d', graph_dir,
+                '-s', seed_file,
+                '-o', outfile,
+                '-i', str(iterations)]

@@ -95,6 +95,10 @@ class ParallelRobustWrapper(RobustWrapper):
         out_file = os.path.join(self.fm.get_data_path(), str(uuid.uuid4()) + ".json")
         self.all_cmds.append((self.get_cmd_satgreedy(graph_dir, epsilon, out_file, adv_set, 1, 0, gamma, number_of_seeds, number_of_blocked_nodes, solvers, dimbeta, alpha), out_file, graph_id))
 
+    def add_simulation(self, graph_dir, seed_path, immunization_info):
+        out_file = os.path.join(self.fm.get_data_path(), str(uuid.uuid4()) + ".json")
+        self.all_cmds.append((self.get_cmd_simulation(graph_dir, seed_path, 10000, out_file), out_file, immunization_info['_id']))
+
     @staticmethod
     def read_log():
         s = ""

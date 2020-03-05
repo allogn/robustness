@@ -21,6 +21,9 @@
         "singlegreedycelf": 1,
         "allgreedy": 0,
         "dimbeta": 32
+      },
+      "Imm": {
+        "epsilon": 0.2
       }
     },
     "strategy": {
