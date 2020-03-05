@@ -4,13 +4,11 @@
     "weight_scale": 0.1,
     "both_directions": 1,
     "random_weight": 1,
-    "n": [5000, [4000, 6000, 7000]],
+    "n": 100,
     "p": 0.4,
-    "m": 2
+    "mm": 2
   },
   "problem": {
-    "l": [50, [40, 60, 70]],
-    "k": [100, [75, 125, 150]],
     "imm_solver": {
       "Degree": {},
       "NetShield": {},
@@ -20,5 +18,21 @@
         "n": 1
       }
     }
-  }
+  },
+  "solver": {
+	  "Rob": {
+  		"mode": -1
+	  },
+	  "SatGreedy": {
+		  "satgreedy": 1,
+		  "singlegreedy": 1,
+		  "singlegreedycelf": 1,
+		  "allgreedy": 1
+	  }
+  },
+  "problem": {
+	   "seeds": [10, [7, 12, 15]],
+     "number_of_blocked_nodes": [1, [2]]
+  },
+  "full_rerun": 1
 }

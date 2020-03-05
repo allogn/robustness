@@ -22,7 +22,7 @@ logging.getLogger('').addHandler(console)
 
 if __name__ == "__main__":
 	scriptname = sys.argv[1]
-	with open(os.path.join(os.path.abspath(''),'..','dags','emt',scriptname + '.json'),'r') as f:
+	with open(os.path.join(os.path.abspath(''),'..','dags',scriptname + '.json'),'r') as f:
 		params = json.load(f)
 	params['tag'] = scriptname
 	print("Experiment {} started at {}".format(scriptname, datetime.datetime.now()))

@@ -2,15 +2,16 @@
 
 This repository provides with an experimental framework for testing robustness of diffusion under Independent Cascade model. The general outline of the framework:
 - Generate a network
+- (optional) Apply Influence Maximization
 - Apply Node Immunization (NI) algorithm to find best nodes to immunize
 - Apply Robust Influence Maximization or Influence Maximization (IM) to find best robust seeds
-- Perform Monte Carlo simulations to evaluate expected spread
+- Evaluate objectives by Monte-Carlo simulations
 
 # Installation
 
 File `requirements.txt` provides with a list of dependencies for the __Conda__ packet manager.
 
-Install Miniconda from here:
+Install Miniconda:
 https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html
 
 Create environment and install dependencies by
@@ -107,17 +108,13 @@ For 'solver' group, possible parameter values are defined as an array
 ```
 The resulting set is a cartesian product of solver parameters 1 and 2.
 
-### Running Simple IM
-
-Setting `mode=-1` for the Rob solver corresponds to the simple IM. Simple IM is implemented in `src/SatGreedy/imm.cpp`, and is compiled in a separate binary from Rob. The `Experiment.py` class considers a special case of `mode=-1`, and schedules Imm instead of Rob.
-
 ### Running Robust algorithms for a sequence of blocked nodes
 
-Setting `number_of_blocked_nodes=-1` will run all algorithms for a sequence of blocked nodes up to n-1, where n is the size of a graph.
+Setting `number_of_blocked_nodes=-1` will run all algorithms for a sequence of blocked nodes up to n-1, where n is the size of a graph. For IMM solver all-sequence run triggers the Dynamic IMM algorithm.
 
 # Running Experiments
 
-All experiments are described as JSON files in the `dags/emt` directory. The following script loads a JSON file and runs the corresponding experiment:
+All experiments are described as JSON files in the `dags` directory. The following script loads a JSON file and runs the corresponding experiment:
 
 ```
 python3 scripts/load_and_run_experiment.py <name of experiment>
