@@ -75,7 +75,7 @@ class Analyzer:
         self.df = new_df
 
 
-    ########### deprecated ---------
+    ########### deprecated all below ---------
 
     # def __init__(self, parameter_manager):
     #     self.pm = parameter_manager

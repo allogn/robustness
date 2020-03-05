@@ -91,9 +91,9 @@ class ParallelRobustWrapper(RobustWrapper):
         imm_id = immunization_info['_id'] # for sticking to network
         self.all_cmds.append((self.get_cmd_imm(graph_dir, out_file, 0.2, seeds), out_file, imm_id))
 
-    def add_satgreedy(self, graph_dir, graph_id, epsilon, adv_set, gamma, number_of_seeds, solvers, dimbeta, alpha):
+    def add_satgreedy(self, graph_dir, graph_id, epsilon, adv_set, gamma, number_of_seeds, number_of_blocked_nodes, solvers, dimbeta, alpha):
         out_file = os.path.join(self.fm.get_data_path(), str(uuid.uuid4()) + ".json")
-        self.all_cmds.append((self.get_cmd_satgreedy(graph_dir, epsilon, out_file, adv_set, 1, 0, gamma, number_of_seeds, -1, solvers, dimbeta, alpha), out_file, graph_id))
+        self.all_cmds.append((self.get_cmd_satgreedy(graph_dir, epsilon, out_file, adv_set, 1, 0, gamma, number_of_seeds, number_of_blocked_nodes, solvers, dimbeta, alpha), out_file, graph_id))
 
     @staticmethod
     def read_log():

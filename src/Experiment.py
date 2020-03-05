@@ -170,23 +170,22 @@ class Experiment:
                             active_solvers.append(s)
 
                     self.pw.add_satgreedy(graph['adjlist_path'], graph['_id'], seeding_parameters['epsilon'],
-                                          graph_to_imm[graph_id][1], seeding_parameters['gamma'], seeding_parameters['seeds'], active_solvers, seeding_parameters['dimbeta'], seeding_parameters['alpha'])
+                                          graph_to_imm[graph_id][1], seeding_parameters['gamma'], seeding_parameters['seeds'],
+                                          seeding_parameters['number_of_blocked_nodes'], active_solvers, seeding_parameters['dimbeta'], seeding_parameters['alpha'])
                                           # todo just single seed for now
                 continue
 
             for immunization in self.db.immunization.find(q):
                 graph_info = self.db.graphs.find_one(immunization['graph'])
                 g_dir = graph_info['adjlist_path']
-                if seeding_parameters['mode'] == 0:
-                    if seeding_parameters['number_of_blocked_nodes'] == 0:
-                        logging.info("Adding simple IMM to schedule (no nodes to be blocked)")
-                        self.pw.add_imm(g_dir, immunization, seeding_parameters['seeds'])
+                if seeding_parameters['mode'] == -1:
                     if seeding_parameters['number_of_blocked_nodes'] == -1:
                         logging.info("Adding simple DIM to schedule")
                         self.pw.add_dyn_imm(g_dir, immunization, seeding_parameters['beta'],
                                             seeding_parameters['seeds'], seeding_parameters['alpha'])
-                    if seeding_parameters['number_of_blocked_nodes'] > 0:
-                        raise Exception("Not implemented")
+                    else: # ignore number of blocked nodes
+                        logging.info("Adding simple IMM to schedule (no nodes to be blocked)")
+                        self.pw.add_imm(g_dir, immunization, seeding_parameters['seeds'])
                 else:
                     self.pw.add_rob(g_dir, immunization, seeding_parameters['iterations'],
                                     seeding_parameters['mode'], seeding_parameters['number_of_blocked_nodes'],
