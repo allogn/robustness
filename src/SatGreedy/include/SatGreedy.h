@@ -57,7 +57,7 @@ public:
 
 		logging["dimbeta"] = arg.dim_beta;
 		logging["alpha"] = arg.blocked_nodes_sampling_coef;
-		logging['number_of_blocked_nodes'] = arg.number_of_blocked_nodes;
+		logging["number_of_blocked_nodes"] = arg.number_of_blocked_nodes;
 	}
 
 	void add_adversaries() {
