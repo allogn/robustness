@@ -4,7 +4,7 @@
     "weight_scale": 0.1,
     "both_directions": 1,
     "random_weight": 1,
-    "n": 100,
+    "n": 2000,
     "p": 0.4,
     "mm": 2
   },
@@ -24,15 +24,15 @@
       "epsilon": 0.2
     },
 	  "SatGreedy": {
-		  "satgreedy": 0,
-		  "singlegreedy": 0,
+		  "satgreedy": 1,
+		  "singlegreedy": 1,
 		  "singlegreedycelf": 1,
-		  "allgreedy": 0
+		  "allgreedy": 1
 	  }
   },
   "problem": {
-	   "seeds": [10, [7]],
-     "number_of_blocked_nodes": 1
+	   "seeds": [50, [60, 70, 80]],
+     "number_of_blocked_nodes": [100, [150, 200, 250]]
   },
   "full_rerun": 1
 }

@@ -2,6 +2,9 @@
 #include <vector>
 #include "argument.h"
 #include "SatGreedy.h"
+#include "json.h"
+
+using json = nlohmann::json;
 
 int main(int argn, char **argv) {
   Argument arg;
@@ -41,12 +44,13 @@ int main(int argn, char **argv) {
   std::cout << mean_std.first << ", " << mean_std.second << std::endl;
   INFO("Done.");
 
-  ofstream f2;
-  f2.open(outf);
-  if (!f2.is_open()) {
-      throw runtime_error("Output directory does not exist");
-  }
-  f2 << "{\n\"objective\": " << mean_std.first << ", \n\"objective_std\": "<< mean_std.second << "\n}";
-  f2.close(); 
+  json logging;
+  logging["objective"] = mean_std.first;
+  logging["objective_std"] = mean_std.second;
+  logging["number_of_seeds"] = seeds.size();
+  std::ofstream logf;
+  logf.open(outf);
+  logf << logging.dump(4);
+  logf.close();
   return 0;
 }

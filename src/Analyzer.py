@@ -28,16 +28,17 @@ class Analyzer:
         for solver_result in self.db.seeding.find(q):
             row = {}
             row.update(solver_result)
-
-            # if row['cmd'].find("/Imm ") > 0:
-
-
             if row['cmd'].find("/Rob ") > 0 or row['cmd'].find("/Imm ") > 0:
                 immunizer = self.db.immunization.find_one(row['related_obj_id'])
                 assert(immunizer != None)
                 row.update(immunizer)
                 graph_id = row['graph']
-            else:
+            if row['cmd'].find("/Simulator ") > 0:
+                imm_simulations = self.db.imm_simulations.find_one(row['related_obj_id'])
+                assert(imm_simulations != None)
+                row.update(imm_simulations)
+                graph_id = row['graph']
+            if row['cmd'].find("/SatGreedy ") > 0:
                 satgreedy_exists = True
                 graph_id = row['related_obj_id']
             graph = self.db.graphs.find_one(graph_id)
@@ -53,13 +54,16 @@ class Analyzer:
         new_df = pd.DataFrame()
         possible_solvers = ['satgreedy', 'all_greedy', 'single_greedy', 'imm', 'single_greedy_celf']
         for row_id in self.df.index:
-            if ('mode' in self.df.columns) and (not np.isnan(self.df.loc[row_id,'mode'])):
+            if self.df.loc[row_id,'cmd'].find("/SatGreedy ") == -1:
                 new_df = new_df.append(self.df.loc[row_id])
             else:
                 for s in possible_solvers:
                     if s in self.df.columns:
-                        new_series = self.df.loc[row_id]
+                        new_series = pd.Series(self.df.loc[row_id])
                         new_series = new_series.append(pd.Series(self.df.loc[row_id,s]))
+                        if 'objective' in pd.Series(self.df.loc[row_id,s]):
+                            new_series = new_series.drop('objective')
+                            new_series['objective'] = pd.Series(self.df.loc[row_id,s])['objective']
                         new_series['solver'] = s
                         new_df = new_df.append(new_series, ignore_index=True)
         new_df.drop(columns=possible_solvers,errors='ignore',inplace=True)

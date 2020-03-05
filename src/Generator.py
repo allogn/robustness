@@ -322,13 +322,7 @@ class Generator:
         return G
 
     @staticmethod
-    def save_to_adjlist(tag, G):
-        fm = FileManager(tag)
-        if G == None:
-            G = self.get()
-        graph_dir = os.path.join(fm.get_data_path(), G.graph['graph_id'])
-        fm.create_path(graph_dir)
-
+    def save_to_adjlist_dir(graph_dir, G):
         nx.write_edgelist(G, os.path.join(graph_dir, "graph.csv"), delimiter=" ", data=['weight'])
         with open(os.path.join(graph_dir, "attributes.txt"),'w') as f:
             f.write("n={}\nm={}\n".format(G.number_of_nodes(), G.number_of_edges()))
@@ -339,6 +333,15 @@ class Generator:
                     f.write("{}={}\n".format("gg_m", G.graph[param]))
                 else:
                     f.write("{}={}\n".format(param, G.graph[param]))
+
+    @staticmethod
+    def save_to_adjlist(tag, G):
+        fm = FileManager(tag)
+        if G == None:
+            G = self.get()
+        graph_dir = os.path.join(fm.get_data_path(), G.graph['graph_id'])
+        fm.create_path(graph_dir)
+        Generator.save_to_adjlist_dir(graph_dir, G)
         return graph_dir #os.path.join(fm.get_relative_data_path(), G.graph['graph_id'])
 
     @staticmethod

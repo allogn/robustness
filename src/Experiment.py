@@ -4,6 +4,7 @@ from collections import defaultdict
 from tqdm import tqdm
 import logging
 import signal
+import uuid
 
 import sys, os
 sys.path.append(os.path.dirname(os.path.realpath(__file__)))
@@ -56,6 +57,8 @@ class Experiment:
         q = {"tag": self.tag}
         self.db.graphs.delete_many(q)
         self.db.immunization.delete_many(q)
+        self.db.simple_seeding.delete_many(q)
+        self.db.imm_simulations.delete_many(q)
         self.db.seeding.delete_many(q)
         self.db.analysis.delete_many(q)
         self.db.parameters.delete_many(q)
@@ -183,8 +186,45 @@ class Experiment:
     def run_imm_simulation(self, seeding_parameters):
         for immunization in self.db.immunization.find({"tag": self.tag}):
             graph_info = self.db.graphs.find_one(immunization['graph'])
+            G = helpers.load_graph(graph_info['pickle_path'])
+            blocked = seeding_parameters['number_of_blocked_nodes']
+            assert blocked > -1
+            with open(immunization['solution_path'], 'r') as f:
+                solution = json.load(f)
+
+            ind = {}
+            j = 0
+            for i in G.nodes():
+                if i not in solution['Blocked nodes'][:blocked]:
+                    ind[i] = j
+                    j += 1
+            G = nx.DiGraph(G.subgraph([n for n in ind])) if G.is_directed() else nx.Graph(G.subgraph([n for n in ind]))
+            nx.relabel_nodes(G, ind, copy=False)
+
+            blocked_graph_path = os.path.join(self.file_db.fm.get_data_path(), str(uuid.uuid4()))
+            self.file_db.fm.create_path(blocked_graph_path)
+            Generator.save_to_adjlist_dir(blocked_graph_path, G)
+
             for seeds in self.db.simple_seeding.find({"graph_id": graph_info['_id']}):
-                self.pw.add_simulation(graph_info['adjlist_path'], seeds['out_file_seeds_only'], immunization)
+
+                with open(seeds['out_file'],'r') as f:
+                    seeds_info = json.load(f)
+                out_file_seeds_only = os.path.join(self.fm.get_data_path(), str(uuid.uuid4()) + ".csv")
+                with open(out_file_seeds_only, 'w') as f:
+                    for s in seeds_info['imm']['seeds']:
+                        if s in ind:
+                            f.write(str(ind[s]) + "\n")
+
+                r = {}
+                r.update(immunization)
+                r.update(seeds)
+                r["blocked_adjlist_path"] = blocked_graph_path
+                r["out_file_seeds_only"] = out_file_seeds_only
+                r['number_of_blocked_nodes'] = blocked
+                r["tag"] = self.tag
+                r.pop("_id")
+                rr = self.db.imm_simulations.insert_one(r)
+                self.pw.add_simulation(blocked_graph_path, out_file_seeds_only, rr.inserted_id)
 
     def run_simple_seeding(self):
         all_params = list(self.pm.get_hyperparam_sets())
@@ -200,11 +240,8 @@ class Experiment:
                     t = time.time() - t
                     result = json.load(open(out_file, "r"))
                     result['out_file'] = out_file
-                    result['out_file_seeds_only'] = out_file_seeds_only
-                    with open(out_file_seeds_only, 'w') as f:
-                        for s in result['imm']['seeds']:
-                            f.write(str(s) + "\n")
                     result['imm_cmd'] = imm_cmd
+                    result['tag'] = self.tag
                     result['runtime'] = t
                     result['epsilon'] = seeding_parameters['epsilon']
                     result['number_of_seeds'] = seeding_parameters['seeds']
