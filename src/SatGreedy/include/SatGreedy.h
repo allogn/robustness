@@ -49,7 +49,7 @@ public:
 	double objective;
 	double cmax;
 	sfmt_t sfmtSeed;
-	bool dyn_mode; // dyn_mode is the mode when objective is evaluated for all sequence of blocked nodes. Set blocked_nodes=-1 for this mode 
+	bool dyn_mode; // dyn_mode is the mode when objective is evaluated for all sequence of blocked nodes. Set blocked_nodes=-1 for this mode
 
 	SatGreedy(Argument arg): Solver(arg) {
 		sfmt_init_gen_rand(&sfmtSeed , 95082);
@@ -57,6 +57,7 @@ public:
 
 		logging["dimbeta"] = arg.dim_beta;
 		logging["alpha"] = arg.blocked_nodes_sampling_coef;
+		logging['number_of_blocked_nodes'] = arg.number_of_blocked_nodes;
 	}
 
 	void add_adversaries() {
