@@ -110,7 +110,7 @@ The resulting set is a cartesian product of solver parameters 1 and 2.
 
 ### Running Robust algorithms for a sequence of blocked nodes
 
-Setting `number_of_blocked_nodes=-1` will run all algorithms for a sequence of blocked nodes up to n-1, where n is the size of a graph. For IMM solver all-sequence run triggers the Dynamic IMM algorithm.
+Setting `number_of_blocked_nodes=-1` will run all algorithms for a sequence of blocked nodes up to n-1, where n is the size of a graph. For IMM solver all-sequence run triggers the Dynamic IMM algorithm (RNI). `mode=0` for the Rob solver will also run Dynamic IMM.
 
 # Running Experiments
 
@@ -121,7 +121,7 @@ python3 scripts/load_and_run_experiment.py <name of experiment>
 ```
 The name of experiment is the same as the name of the JSON file that describes it.
 
-Some experiments are run by separate scripts in the `scripts` directory.
+Some experiments are run by separate scripts in the `scripts` directory, and the experiments on improving robustness are run directly from the jupyter notebooks (`SmallExamples.ipynb` and `VK.ipynb`).
 
 # Plotting Results
 

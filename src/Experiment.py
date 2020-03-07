@@ -260,9 +260,10 @@ class Experiment:
 
             if seeding_parameters['solver'] == "SatGreedy":
                 self.run_satgreedy(seeding_parameters)
-            if seeding_parameters['solver'] == "Rob":
+            if seeding_parameters['solver'] == "Rob" and seeding_parameters['mode'] != 0:
                 self.run_rob(seeding_parameters)
-            if seeding_parameters['solver'] == "Imm" and seeding_parameters['number_of_blocked_nodes'] == -1:
+            if (seeding_parameters['solver'] == "Imm" and seeding_parameters['number_of_blocked_nodes'] == -1) \
+                or (seeding_parameters['solver'] == "Rob" and seeding_parameters['mode'] == 0): #back compatibility
                 self.run_dyn_imm(seeding_parameters)
             if seeding_parameters['solver'] == "Imm" and seeding_parameters['number_of_blocked_nodes'] > -1:
                 self.run_imm_simulation(seeding_parameters)
