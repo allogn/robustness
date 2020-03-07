@@ -1,12 +1,13 @@
 {
   "data": {
-    "graph_type": "powerlaw_cluster",
+    "graph_type": "gaussian_random_partition",
     "weight_scale": 0.1,
-    "both_directions": 1,
     "random_weight": 1,
-    "n": [5000, [4000, 6000, 7000]],
-    "p": 0.4,
-    "mm": 2
+    "n": [3000, [1000, 5000, 7000]],
+    "s": 100,
+    "v": 0.9,
+    "p_in": 0.022,
+    "p_out": 0.0003
   },
   "problem": {
     "imm_solver": {
@@ -24,6 +25,7 @@
       "epsilon": 0.2
     },
 	  "SatGreedy": {
+		  "gamma": 0.0001,
 		  "satgreedy": 1,
 		  "singlegreedy": 1,
 		  "singlegreedycelf": 1,
@@ -31,8 +33,8 @@
 	  }
   },
   "problem": {
-     "seeds": [100, [75, 125, 150]],
-     "number_of_blocked_nodes": [50, [40, 60, 70]]
+     "seeds": [90, [10, 170, 250]],
+     "number_of_blocked_nodes": [180, [1, 90, 270]]
   },
-  "full_rerun": 1
+  "full_rerun": 0
 }

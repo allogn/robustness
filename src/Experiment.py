@@ -196,10 +196,12 @@ class Experiment:
             j = 0
             for i in G.nodes():
                 if i not in solution['Blocked nodes'][:blocked]:
+                    assert(i not in ind)
                     ind[i] = j
                     j += 1
+            assert len(ind) > 0
             G = nx.DiGraph(G.subgraph([n for n in ind])) if G.is_directed() else nx.Graph(G.subgraph([n for n in ind]))
-            nx.relabel_nodes(G, ind, copy=False)
+            G = nx.relabel_nodes(G, ind, copy=True)
 
             blocked_graph_path = os.path.join(self.file_db.fm.get_data_path(), str(uuid.uuid4()))
             self.file_db.fm.create_path(blocked_graph_path)
