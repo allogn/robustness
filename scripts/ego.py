@@ -25,7 +25,6 @@ params = {
       "Rob": {
         "mode": [0, 5],
         "iterations": 100,
-        "number_of_blocked_nodes": -1,
         "beta": 32
       },
       "SatGreedy": {
@@ -50,6 +49,7 @@ params = {
       "Betweenness": {}
     },
     "problem": {
+      "number_of_blocked_nodes": -1,
       "seeds": 1,
       "alpha": 1
     },
