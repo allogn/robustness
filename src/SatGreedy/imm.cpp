@@ -24,6 +24,7 @@ int main(int argn, char **argv) {
     std::string adv_file;
     std::string tags;
     bool collect_marginal_gain;
+    int lt_model;
 
     Argument arg;
     po::options_description desc("Allowed options");
@@ -33,6 +34,7 @@ int main(int argn, char **argv) {
             ("output,o", po::value<std::string>(&arg.log)->required(), "Output json file (or directory if not dynamic)") //@todo directory was for airflow, redundant
             ("epsilon,e", po::value<double>(&arg.epsilon)->required(), "Accuracy parameter")
             ("seeds,s", po::value<int>(&arg.s)->default_value(1), "Number of seeds")
+            ("lt,t", po::value<int>(&lt_model)->default_value(0), "0 - IC model, 1 - LT model")
             ("sampling,c", po::value<double>(&arg.blocked_nodes_sampling_coef)->default_value(1), "Sample number of blocked nodes")
             ("marginal,m", po::value<bool>(&collect_marginal_gain)->default_value(false), "Collect marginal gain from seeds per iteration")
             ("reward,r", po::value<int>(&arg.reward_type)->default_value(0), "Reward Type (0 - non-weighted hyperedges, 1 - weighted hyperedges)")
@@ -51,6 +53,7 @@ int main(int argn, char **argv) {
 
     auto_cpu_timer timer; // prints time on destruction
     arg.mc_iterations = 1000;
+    arg.lt_model = lt_model == 1;
 
     if (adv_file != "") {
         Imm imm(arg);

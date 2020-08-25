@@ -30,7 +30,7 @@ BOOST_AUTO_TEST_CASE(testIncrementalEstimation, *utf::tolerance(0.1)) {
   f << "0 1 0.1\n1 2 0.2\n0 2 0.3\n2 3 0.4\n3 4 0.5\n4 3 0.6\n4 0 0.7";
   f.close();
 
-  InfGraph g(graph_dir.native(), "graph.csv");
+  InfGraph g(graph_dir.native(), "graph.csv", false);
   g.init_hyper_graph();
   g.build_hyper_graph_r(1000);
   double cached = g.estimate_influence_inc(0, false);
@@ -64,7 +64,7 @@ BOOST_AUTO_TEST_CASE(testIncrementalEstimation2) {
   f << "0 1 0.1\n1 2 0.2\n0 2 0.3\n2 3 0.4\n3 4 0.5\n4 3 0.6\n4 0 0.7";
   f.close();
 
-  InfGraph g(graph_dir.native(), "graph.csv");
+  InfGraph g(graph_dir.native(), "graph.csv", false);
   g.init_hyper_graph();
   g.build_hyper_graph_r(1000);
   g.estimate_influence_inc(0, true);
@@ -93,7 +93,7 @@ BOOST_AUTO_TEST_CASE(testLaplasian) {
   f << "0 1 0.1\n1 2 0.2\n0 2 0.3\n2 3 0.4\n3 4 0.5\n4 3 0.6\n4 0 0.7";
   f.close();
 
-  InfGraph g(graph_dir.native(), "graph.csv");
+  InfGraph g(graph_dir.native(), "graph.csv", false);
   g.reward_type = LAPLACIAN;
   std::vector<std::vector<nid_t>> active_edges(5);
   active_edges[0].push_back(2);

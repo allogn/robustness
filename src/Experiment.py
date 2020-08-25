@@ -182,7 +182,7 @@ class Experiment:
             g_dir = graph_info['adjlist_path']
             logging.info("Adding simple DIM to schedule")
             self.pw.add_dyn_imm(g_dir, immunization, seeding_parameters['beta'],
-                                seeding_parameters['seeds'], seeding_parameters['alpha'])
+                                seeding_parameters['seeds'], seeding_parameters['alpha'], seeding_parameters['lt_model'])
 
     def run_imm_simulation(self, seeding_parameters):
         for immunization in self.db.immunization.find({"tag": self.tag}):
@@ -237,7 +237,8 @@ class Experiment:
                     graph_dir = graph_info['adjlist_path']
                     out_file = os.path.join(self.fm.get_data_path(), str(uuid.uuid4()) + ".json")
                     out_file_seeds_only = os.path.join(self.fm.get_data_path(), str(uuid.uuid4()) + ".csv")
-                    imm_cmd = self.pw.get_cmd_imm(graph_dir, out_file, seeding_parameters['epsilon'], seeding_parameters['seeds'])
+                    imm_cmd = self.pw.get_cmd_imm(graph_dir, out_file, seeding_parameters['epsilon'], 
+                                                    seeding_parameters['seeds'], seeding_parameters['lt_model'])
                     t = time.time()
                     self.pw.run_cmd(imm_cmd,False,ParallelRobustWrapper.TIMEOUT)
                     t = time.time() - t

@@ -66,7 +66,7 @@ BOOST_AUTO_TEST_CASE(testSestimationByDSF) {
     create_graph(5, edgelist, adversary);
 
     auto tmp_dir = get_tmp_dir();
-    Rob rob(Rob::DFS_MAX_TREE, tmp_dir.c_str(), (tmp_dir / "adversary.json").c_str());
+    Rob rob(Rob::DFS_MAX_TREE, tmp_dir.c_str(), (tmp_dir / "adversary.json").c_str(), false);
     BOOST_TEST(rob.g.get_graph_id() == "110");
     rob.run(1);
     rob.save_log((tmp_dir / "result.json").c_str());
@@ -155,7 +155,7 @@ BOOST_AUTO_TEST_CASE(testSCC) {
 
     for (int mode = 1; mode <= 6; mode++) {
 
-        Rob rob((Rob::Mode)mode, tmp_dir.c_str(), (tmp_dir / "adversary.json").c_str());
+        Rob rob((Rob::Mode)mode, tmp_dir.c_str(), (tmp_dir / "adversary.json").c_str(), false);
         auto r = rob.run(1, 1);
 
         BOOST_TEST(r == 6);
@@ -220,7 +220,7 @@ BOOST_AUTO_TEST_CASE(testSCC2) {
 
     for (int mode = 2; mode <= 6; mode++) {
 
-        Rob rob((Rob::Mode)mode, tmp_dir.c_str(), (tmp_dir / "adversary.json").c_str());
+        Rob rob((Rob::Mode)mode, tmp_dir.c_str(), (tmp_dir / "adversary.json").c_str(), false);
         auto r = rob.run(1, 0);
         BOOST_TEST(r == 1);
     }
@@ -234,7 +234,7 @@ BOOST_AUTO_TEST_CASE(testSCC3) {
 
     for (int mode = 1; mode <= 6; mode++) {
 
-        Rob rob((Rob::Mode)mode, tmp_dir.c_str(), (tmp_dir / "adversary.json").c_str());
+        Rob rob((Rob::Mode)mode, tmp_dir.c_str(), (tmp_dir / "adversary.json").c_str(), false);
         auto r = rob.run(1, 0);
         BOOST_TEST(r == 6);
     }
@@ -248,7 +248,7 @@ BOOST_AUTO_TEST_CASE(testSCC_prob) {
 
     for (int mode = 2; mode <= 5; mode++) {
 
-        Rob rob((Rob::Mode)mode, tmp_dir.c_str(), (tmp_dir / "adversary.json").c_str());
+        Rob rob((Rob::Mode)mode, tmp_dir.c_str(), (tmp_dir / "adversary.json").c_str(), false);
         auto r = rob.run(1, 0);
     }
 }
@@ -263,7 +263,7 @@ BOOST_AUTO_TEST_CASE(testAllEqual) {
     std::vector<double> r_values;
     for (int mode = 1; mode <= 6; mode++) {
 
-        Rob rob((Rob::Mode)mode, tmp_dir.c_str(), (tmp_dir / "adversary.json").c_str());
+        Rob rob((Rob::Mode)mode, tmp_dir.c_str(), (tmp_dir / "adversary.json").c_str(), false);
         double r = rob.run(1);
         r_values.push_back(r);
     }
@@ -282,7 +282,7 @@ BOOST_AUTO_TEST_CASE(testAllAlmostEqual) {
 
     for (int mode = 1; mode <= 6; mode++) {
 
-        Rob rob((Rob::Mode)mode, tmp_dir.c_str(), (tmp_dir / "adversary.json").c_str());
+        Rob rob((Rob::Mode)mode, tmp_dir.c_str(), (tmp_dir / "adversary.json").c_str(), false);
         auto r = rob.run(100);
         if (all_r == 0) {
             all_r = r;
@@ -300,7 +300,7 @@ BOOST_AUTO_TEST_CASE(testIfRunsMultiseed) {
 
     for (int mode = 5; mode <= 6; mode++) {
 
-        Rob rob((Rob::Mode)mode, tmp_dir.c_str(), (tmp_dir / "adversary.json").c_str());
+        Rob rob((Rob::Mode)mode, tmp_dir.c_str(), (tmp_dir / "adversary.json").c_str(), false);
         auto r = rob.run(1, 0, 3);
         BOOST_TEST(r > 0);
     }
@@ -313,11 +313,11 @@ BOOST_AUTO_TEST_CASE(testNumberOfSCC) {
     auto tmp_dir = get_tmp_dir();
 
     create_graph(adversary1.size(), edgelist, adversary1);
-    Rob rob1((Rob::Mode)5, tmp_dir.c_str(), (tmp_dir / "adversary.json").c_str());
+    Rob rob1((Rob::Mode)5, tmp_dir.c_str(), (tmp_dir / "adversary.json").c_str(), false);
     rob1.run(1,-1,10);
 
     create_graph(adversary2.size(), edgelist, adversary2);
-    Rob rob2((Rob::Mode)5, tmp_dir.c_str(), (tmp_dir / "adversary.json").c_str());
+    Rob rob2((Rob::Mode)5, tmp_dir.c_str(), (tmp_dir / "adversary.json").c_str(), false);
     rob2.run(1,-1,10);
 
     BOOST_TEST(rob1.number_of_scc[0] == rob2.number_of_scc[0]);

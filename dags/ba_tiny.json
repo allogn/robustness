@@ -7,5 +7,13 @@
 		"p": 0.2,
 		"mm": 2
 	},
+	"solver": {
+		"Rob": {
+			"mode": [0,5]
+		}
+	},
+    "problem": {
+      "lt_model": 1
+    },
 	"full_rerun": 1
 }

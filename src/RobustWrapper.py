@@ -42,7 +42,7 @@ class RobustWrapper:
     def get_cmd_satgreedy(graph_dir, epsilon, out_file, adv_set, beta, mc_iterations, gamma, number_of_seeds, 
                             number_of_blocked_nodes, solvers, dimbeta, alpha, lt):
         cmd = [ os.path.join(RobustWrapper.BIN_PATH,'SatGreedy'),
-                '-lt', lt,
+                '-lt', str(lt),
                 '-dataset', graph_dir,
                 '-epsilon', str(epsilon),
                 '-s', str(number_of_seeds),
@@ -74,19 +74,20 @@ class RobustWrapper:
                 '-s', str(seeds),
                 '-c', str(alpha),
                 '-a', adv_file,
-                '-t', lt,
+                '-t', str(lt),
                 '-o', out_file]
         if number_of_blocked_nodes != None:
             cmd += ['-l', str(number_of_blocked_nodes)]
         return cmd
 
     @staticmethod
-    def get_cmd_dyn_imm(graph_dir, adversary_file, out_file, beta = 32, seeds=1, alpha=1):
-        assert(beta > 1);
+    def get_cmd_dyn_imm(graph_dir, adversary_file, out_file, lt, beta = 32, seeds=1, alpha=1):
+        assert(beta > 1)
         return [ os.path.join(RobustWrapper.BIN_PATH,'Imm'),
                 '-d', graph_dir,
                 '-e', str(beta),
                 '-m', '0',
+                '-t', str(lt),
                 '-c', str(alpha),
                 '-s', str(seeds),
                 '-a', adversary_file,
@@ -94,12 +95,13 @@ class RobustWrapper:
 
 
     @staticmethod
-    def get_cmd_imm(graph_dir, out_file, epsilon, seeds):
-        assert(epsilon < 1);
+    def get_cmd_imm(graph_dir, out_file, epsilon, seeds, lt):
+        assert(epsilon < 1)
         return [ os.path.join(RobustWrapper.BIN_PATH,'Imm'),
                 '-d', graph_dir,
                 '-s', str(seeds),
                 '-e', str(epsilon),
+                '-t', str(lt),
                 '-o', out_file]
 
     @staticmethod
