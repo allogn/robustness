@@ -12,9 +12,14 @@ int main(int argn, char **argv) {
   {
       if (argv[i] == string("-help") || argv[i] == string("--help") || argn == 1)
       {
-          cout << "./satgreedy -sampling *** -dimbeta *** -dataset *** -l *** -epsilon *** -s *** -log *** -gamma *** -adversaries *** -orobj *** -strict *** -beta *** -mc_iterations *** (-with_<solvername>)" << endl;
+          cout << "./satgreedy -lt *** -sampling *** -dimbeta *** -dataset *** -l *** -epsilon *** -s *** -log *** -gamma *** -adversaries *** -orobj *** -strict *** -beta *** -mc_iterations *** (-with_<solvername>)" << endl;
           return 1;
       }
+
+    
+      if (argv[i] == string("-lt")) // if to use LT model
+          arg.lt_model = argv[i + 1][0] == '1';
+
       if (argv[i] == string("-dataset"))
           arg.dataset = argv[i + 1];
       /*

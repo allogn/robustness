@@ -17,6 +17,7 @@ int main(int argn, char **argv) {
     int number_of_blocked_nodes;
     int seeds;
     double sampling;
+    int lt_model;
 
     po::options_description desc("Allowed options");
     desc.add_options()
@@ -26,6 +27,7 @@ int main(int argn, char **argv) {
             ("output,o", po::value<std::string>(&outputf)->required(), "Output json file")
             ("seeds,s", po::value<int>(&seeds)->default_value(1), "Seeds")
             ("sampling,c", po::value<double>(&sampling)->default_value(1), "Sample number of blocked nodes")
+            ("lt,t", po::value<int>(&lt_model)->default_value(0), "0 - IC model, 1 - LT model")
             ("blocked,l", po::value<int>(&number_of_blocked_nodes)->default_value(-1), "Number of blocked nodes")
             ("mode,m", po::value<int>(&mode)->default_value(3), "0 - Largest Component, 1 - MaxTree, 2 - FastMaxTree, 3 - DownUpTree, 4 - DynTree, 5 - DAGGER, 6 - DAGGER Bit")
             ("adversary,a", po::value<std::string>(&adv_file)->required(), "File with sorted list of adversaries");
@@ -39,7 +41,7 @@ int main(int argn, char **argv) {
     po::notify(vm);
 
     auto_cpu_timer timer; // prints times on destruction
-    auto rob = Rob((Rob::Mode)(mode), dirname, adv_file);
+    auto rob = Rob((Rob::Mode)(mode), dirname, adv_file, lt_model == 1);
     rob.run(iterations, number_of_blocked_nodes, seeds, sampling);
     rob.save_log(outputf);
     return 0;

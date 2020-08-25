@@ -91,7 +91,7 @@ public:
             INFO("Incorrect adversary input, no solver.", j.dump(4));
             throw std::runtime_error("Input error.");
         }
-        g = InfGraph(arg.dataset, "graph.csv", blocked_nodes, edgelist, weights);
+        g = InfGraph(arg.dataset, "graph.csv", arg.lt_model, blocked_nodes, edgelist, weights);
     }
 
     void set_max_S(nid_t max_S) {

@@ -40,6 +40,7 @@
     "problem": {
       "number_of_blocked_nodes": -1,
       "seeds": 2,
+      "lt_model": 0,
       "alpha": 1
     },
     "full_rerun": 1,

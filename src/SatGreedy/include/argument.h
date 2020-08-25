@@ -21,6 +21,7 @@ public:
     int rr_iterations = 10000;
     int reward_type = 0;
     double blocked_nodes_sampling_coef = 1;
+    bool lt_model = false;
 };
 
 #endif

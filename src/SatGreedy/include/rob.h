@@ -12,6 +12,7 @@
 #include <boost/timer/timer.hpp>
 #include <math.h>
 #include <queue>
+#include <random>
 
 #include "graph.h"
 #include "json.h"
@@ -35,6 +36,7 @@ class Rob {
     std::unordered_map<int, std::forward_list<nid_t>> active_edges;
     std::unordered_map<int, std::forward_list<nid_t>> reverse_active_edges; // used only for Grail
     int maxtree_dagger_addition; // we don't need heap for dagger, just substitute here if new tree appears. it will always be larger
+    bool is_lt;
 
     std::unordered_map<int, ReachabilityLabels> reachability_labels;
     BitIndex node_id_to_bit_id_index;//for bitset operations we need only positive dag node ids
@@ -104,19 +106,37 @@ class Rob {
     }
 
     void build_active_edges() {
+	    std::default_random_engine generator;
         active_edges.clear();
         reverse_active_edges.clear();
         for (nid_t i = 0; i < g.n; i++) {
-            if (blocked_nodes.find(i) != blocked_nodes.end()) continue;
             std::forward_list<nid_t> empty_list;
             active_edges[i] = empty_list; // touch. important because mydag builds active_nodes based on existance in active_edges
-            for (nid_t j = 0; j < g.g[i].size(); j++) {
-                if (blocked_nodes.find(g.g[i][j]) != blocked_nodes.end()) continue;
-                double randDouble = sfmt_genrand_real1(&sfmtSeed);
-                if (randDouble <= g.prob[i][j]) {
-                    active_edges[i].push_front(g.g[i][j]);
-                    if (mode == DYN_GRAIL_MAX_TREE || mode == DYN_GRAIL_MAX_TREE_BIT) {
-                        reverse_active_edges[g.g[i][j]].push_front(i);
+        }
+        for (nid_t i = 0; i < g.n; i++) {
+            if (blocked_nodes.find(i) != blocked_nodes.end()) continue;
+            if (this->is_lt) {
+                for (nid_t j = 0; j < g.gT[i].size(); j++) {
+                    nid_t v = g.gT[i][j];
+                    if (blocked_nodes.find(v) != blocked_nodes.end()) continue;
+                    double sum_of_income_edges = std::accumulate(g.probT[v].begin(), g.probT[v].end(), 0);
+                    double randDouble = sfmt_genrand_real1(&sfmtSeed);
+                    if (randDouble <= sum_of_income_edges) {
+                        // choose one incoming edge, otherwise don't choose any
+                        std::discrete_distribution<nid_t> distribution(g.probT[v].begin(), g.probT[v].end());
+                        int inverse_incoming_edge_neigh = distribution(generator);
+                        active_edges[inverse_incoming_edge_neigh].push_front(v);
+                    } 
+                }
+            } else {
+                for (nid_t j = 0; j < g.g[i].size(); j++) {
+                    if (blocked_nodes.find(g.g[i][j]) != blocked_nodes.end()) continue;
+                    double randDouble = sfmt_genrand_real1(&sfmtSeed);
+                    if (randDouble <= g.prob[i][j]) {
+                        active_edges[i].push_front(g.g[i][j]);
+                        if (mode == DYN_GRAIL_MAX_TREE || mode == DYN_GRAIL_MAX_TREE_BIT) {
+                            reverse_active_edges[g.g[i][j]].push_front(i);
+                        }
                     }
                 }
             }
@@ -560,7 +580,7 @@ public:
                   DYN_GRAIL_MAX_TREE_BIT} Mode;
     Mode mode;
 
-    Rob(Mode m, std::string graph_dir, std::string adversary_file) {
+    Rob(Mode m, std::string graph_dir, std::string adversary_file, bool is_lt) {
         mode = m;
         if (mode > 6 || mode < 0) {
             throw std::runtime_error("Mode is not implemented");
@@ -570,6 +590,8 @@ public:
         dagger_graph = nullptr;
         dagger_index = nullptr;
         dag = nullptr;
+
+        this->is_lt = is_lt;
 
         // adversary file should contain a sorted list of nodes to remove from the network
         g = Graph(graph_dir, "graph.csv");

@@ -93,7 +93,7 @@ public:
         std::vector<nid_t> blocked_nodes = std::vector<nid_t>(),
         std::vector<double> edgelist = std::vector<double>(),
         std::vector<double> weights = std::vector<double>()) {
-      g = InfGraph(arg.dataset, "graph.csv", blocked_nodes, edgelist, weights);
+      g = InfGraph(arg.dataset, "graph.csv", arg.lt_model, blocked_nodes, edgelist, weights);
 
       this->arg = arg;
       this->epsilon = arg.epsilon;

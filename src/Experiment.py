@@ -162,7 +162,8 @@ class Experiment:
 
             self.pw.add_satgreedy(graph['adjlist_path'], graph['_id'], seeding_parameters['epsilon'],
                                   graph_to_imm[graph_id][1], seeding_parameters['gamma'], seeding_parameters['seeds'],
-                                  seeding_parameters['number_of_blocked_nodes'], active_solvers, seeding_parameters['dimbeta'], seeding_parameters['alpha'])
+                                  seeding_parameters['number_of_blocked_nodes'], active_solvers, seeding_parameters['dimbeta'], 
+                                  seeding_parameters['alpha'], seeding_parameters['lt_model'])
                                   # todo just single seed for now
 
     def run_rob(self, seeding_parameters):
@@ -172,7 +173,7 @@ class Experiment:
             g_dir = graph_info['adjlist_path']
             self.pw.add_rob(g_dir, immunization, seeding_parameters['iterations'],
                             seeding_parameters['mode'], seeding_parameters['number_of_blocked_nodes'],
-                            seeding_parameters['seeds'], seeding_parameters['alpha'])
+                            seeding_parameters['seeds'], seeding_parameters['alpha'], seeding_parameters['lt_model'])
 
     def run_dyn_imm(self, seeding_parameters):
         q = {"tag": self.tag}

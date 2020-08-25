@@ -9,7 +9,10 @@
 #include <utility>
 #include <math.h>
 #include <unordered_set>
+#include <random>
 #include <unordered_map>
+#include <numeric>
+#include <boost/functional/hash.hpp>
 
 #include <Eigen/Sparse>
 //#include <Spectra/GenEigsSolver.h>
@@ -27,6 +30,17 @@ struct CompareBySecond {
 	}
 };
 
+struct pair_hash {
+    template <class T1, class T2>
+    std::size_t operator () (const std::pair<T1,T2> &p) const {
+		std::size_t seed = 0;
+        boost::hash_combine(seed, p.first);
+        boost::hash_combine(seed, p.second);
+        return seed;  
+    }
+};
+
+
 typedef enum {UNIT, LAPLACIAN} RewardType;
 
 class InfGraph: public Graph
@@ -36,6 +50,7 @@ private:
     vector<int> visit_mark;
     bool collect_convergence = false;
     vector<nid_t> random_seeds;
+	std::default_random_engine generator;
 public:
 	json logging;
     vector<vector<int>> nodesToHyper;
@@ -49,10 +64,11 @@ public:
 	vector<nid_t> single_adversary_sequence; // for dynamic version, a sequence of nodes to block
 
 	RewardType reward_type = UNIT;
+	bool is_lt;
 
     InfGraph() {}
 
-    InfGraph(string folder, string graph_file, std::vector<nid_t> blocked_nodes = std::vector<nid_t>(),
+    InfGraph(string folder, string graph_file, bool _is_lt, std::vector<nid_t> blocked_nodes = std::vector<nid_t>(),
 							std::vector<double> edgelist = std::vector<double>(),
 							std::vector<double> weights = std::vector<double>()): Graph(folder, graph_file, blocked_nodes, edgelist, weights)
     {
@@ -60,7 +76,7 @@ public:
         init_hyper_graph();
         visit = vector<bool> (n);
         visit_mark = vector<int> (n);
-
+		is_lt = _is_lt;
 
         if (collect_convergence) {
             for (int i = 0; i < 0.1*n; i++)
@@ -157,9 +173,9 @@ public:
         for (int i = prevSize; i <= R; i++)
         {
 			if (blocked_nodes.size() > 0) {
-            	BuildHypergraphNodeBlocked(random_number[i-prevSize], i, blocked_nodes);
+            	BuildHypergraphNodeBlocked(random_number[i-prevSize], i, blocked_nodes, this->is_lt);
 			} else {
-            	BuildHypergraphNode(random_number[i-prevSize], i, W); //W is the measure for dynamic IM, it should min required samples
+            	BuildHypergraphNode(random_number[i-prevSize], i, this->is_lt, W); //W is the measure for dynamic IM, it should min required samples
 			}
 
             for (int t : hyperToNodes[i]) {
@@ -377,9 +393,88 @@ public:
 		return det;
 	}
 
+	long BuildHypergraphNodeLT(nid_t uStart, nid_t hyperiiid, long* W = nullptr) {
+		ASSERT((nid_t)hyperToNodes.size() > hyperiiid);
+		hyperToNodes[hyperiiid].push_back(uStart);
 
-	long BuildHypergraphNode(nid_t uStart, nid_t hyperiiid, long* W = nullptr)
+		nid_t n_visit_mark = 0;
+		long n_visit_edge = 1;
+		
+		q.clear();
+		q.push_back(uStart);
+		visit_mark[n_visit_mark++] = uStart;
+		long visited = 1;
+		visit[uStart] = true;
+		vector<vector<nid_t>> active_used_edges(n);
+		vector<bool> nodes_with_edges_checked(n, false);
+		std::unordered_set<std::pair<nid_t, nid_t>, pair_hash> active_edges;
+
+		long active_edge_count = 0;
+		while (!q.empty())
+		{
+			// pick the node
+			nid_t expand = q.front();
+			q.pop_front();
+			nid_t i = expand;
+
+			// for all out-neighbors
+			for (nid_t j = 0; j < (nid_t)gT[i].size(); j++)
+			{
+				// check all incoming edges of each out-neighbor that hasn't been checked
+				// add non-traversed neighbors that have successful edge to the queue
+				nid_t v = gT[i][j];
+				if (single_adversary_blocked_nodes.count(v)) continue; // for dynamic imm
+
+				if (!nodes_with_edges_checked[v]) {
+					double sum_of_income_edges = std::accumulate(prob[v].begin(), prob[v].end(), 0);
+					double randDouble = sfmt_genrand_real1(&sfmtSeed);
+					if (randDouble <= sum_of_income_edges) {
+						// choose one incoming edge, otherwise don't choose any
+						std::discrete_distribution<nid_t> distribution(prob[v].begin(), prob[v].end());
+						int inverse_incoming_edge_neigh = distribution(generator);
+						active_edges.emplace(inverse_incoming_edge_neigh,v);
+					} 
+					nodes_with_edges_checked[v] = true;
+				}
+
+				n_visit_edge++;
+				if (active_edges.count(std::make_pair(i,v)) == 0) {
+					continue;
+				}
+				active_used_edges[i].push_back(j);
+				active_edge_count++;
+
+				if (visit[v])
+					continue;
+				if (!visit[v])
+				{
+					ASSERT(n_visit_mark < n);
+					visit_mark[n_visit_mark++] = v;
+					visit[v] = true;
+					visited++;
+				}
+				q.push_back(v);
+				ASSERT((nid_t)hyperToNodes.size() > hyperiiid);
+				hyperToNodes[hyperiiid].push_back(v);
+			}
+		}
+		for (nid_t i = 0; i < n_visit_mark; i++)
+			visit[visit_mark[i]] = false;
+
+
+		hyperToReward[hyperiiid] = get_reward(active_used_edges, uStart);
+
+		if (W != nullptr) (*W) += visited + active_edge_count;
+
+		return n_visit_edge;
+	}
+
+
+	long BuildHypergraphNode(nid_t uStart, nid_t hyperiiid, bool is_lt, long* W = nullptr)
 	{
+		if (is_lt) {
+			return this->BuildHypergraphNodeLT(uStart, hyperiiid, W);
+		}
 		long n_visit_edge = 1;
 		ASSERT((nid_t)hyperToNodes.size() > hyperiiid);
 		hyperToNodes[hyperiiid].push_back(uStart);
@@ -451,8 +546,98 @@ public:
         return 1.0*influence / hyperToNodes.size() * n;
 	}
 
-	long BuildHypergraphNodeBlocked(nid_t uStart, nid_t hyperiiid, std::vector<std::vector<nid_t>>& blocked_nodes)
+	long BuildHypergraphNodeBlockedLT(nid_t uStart, nid_t hyperiiid, std::vector<std::vector<nid_t>>& blocked_nodes)
 	{
+		long n_visit_edge = 1;
+		ASSERT((nid_t)hyperToNodes.size() > hyperiiid);
+		hyperToNodes[hyperiiid].push_back(uStart);
+
+		nid_t n_visit_mark = 0;
+
+		q.clear();
+		q.push_back(uStart);
+		ASSERT(n_visit_mark < n);
+		visit_mark[n_visit_mark++] = uStart;
+		visit[uStart] = true;
+		std::vector<nid_t> worst_candidate_nodes;
+		nid_t worst_nodes = INT_MAX;
+
+		vector<bool> nodes_with_edges_checked(n, false);
+		std::unordered_set<std::pair<nid_t, nid_t>, pair_hash> active_edges;
+
+		for (auto& a : blocked_nodes)
+		{
+			std::vector<nid_t> candidate_nodes;
+
+			if (a[uStart] < 0) {
+				q.clear(); // initial node is blocked
+			}
+			while (!q.empty())
+			{
+				nid_t expand = q.front();
+				q.pop_front();
+				nid_t i = expand;
+				for (nid_t j = 0; j < (nid_t)gT[i].size(); j++)
+				{
+					//int u=expand;
+					nid_t v = gT[i][j];
+					if (a[v] < 0) {
+						continue;
+					}
+
+					if (!nodes_with_edges_checked[v]) {
+						double sum_of_income_edges = std::accumulate(prob[v].begin(), prob[v].end(), 0);
+						double randDouble = sfmt_genrand_real1(&sfmtSeed);
+						if (randDouble <= sum_of_income_edges) {
+							// choose one incoming edge, otherwise don't choose any
+							std::discrete_distribution<nid_t> distribution(prob[v].begin(), prob[v].end());
+							int inverse_incoming_edge_neigh = distribution(generator);
+							active_edges.insert(std::make_pair(inverse_incoming_edge_neigh,v));
+						} 
+						nodes_with_edges_checked[v] = true;
+					}
+
+					if (active_edges.count(std::make_pair(i,v)) == 0) {
+						continue;
+					}
+
+					if (visit[v])
+						continue;
+					if (!visit[v])
+					{
+						ASSERT(n_visit_mark < n);
+						visit_mark[n_visit_mark++] = v;
+						visit[v] = true;
+					}
+					q.push_back(v);
+					candidate_nodes.push_back(v);
+				}
+			}
+			for (nid_t i = 0; i < n_visit_mark; i++)
+				visit[visit_mark[i]] = false;
+			if (worst_nodes > candidate_nodes.size()) {
+				worst_candidate_nodes = candidate_nodes;
+				worst_nodes = candidate_nodes.size();
+				INFO("Updated worst: ", worst_nodes);
+			}
+		}
+		INFO("Added edge with nodes: ", worst_candidate_nodes.size());
+		ASSERT(worst_nodes == worst_candidate_nodes.size());
+		ASSERT((nid_t)hyperToNodes.size() > hyperiiid);
+		hyperToNodes[hyperiiid] = worst_candidate_nodes;
+
+
+		hyperToReward[hyperiiid] = 1;
+
+		return n_visit_edge;
+	}
+
+	long BuildHypergraphNodeBlocked(nid_t uStart, nid_t hyperiiid, std::vector<std::vector<nid_t>>& blocked_nodes, bool is_lt)
+	{
+		if (is_lt) {
+			return this->BuildHypergraphNodeBlockedLT(uStart, hyperiiid, blocked_nodes);
+		}
+
 		long n_visit_edge = 1;
 		ASSERT((nid_t)hyperToNodes.size() > hyperiiid);
 		hyperToNodes[hyperiiid].push_back(uStart);

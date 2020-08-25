@@ -39,8 +39,10 @@ class RobustWrapper:
             return output, errors
 
     @staticmethod
-    def get_cmd_satgreedy(graph_dir, epsilon, out_file, adv_set, beta, mc_iterations, gamma, number_of_seeds, number_of_blocked_nodes, solvers, dimbeta, alpha):
+    def get_cmd_satgreedy(graph_dir, epsilon, out_file, adv_set, beta, mc_iterations, gamma, number_of_seeds, 
+                            number_of_blocked_nodes, solvers, dimbeta, alpha, lt):
         cmd = [ os.path.join(RobustWrapper.BIN_PATH,'SatGreedy'),
+                '-lt', lt,
                 '-dataset', graph_dir,
                 '-epsilon', str(epsilon),
                 '-s', str(number_of_seeds),
@@ -64,7 +66,7 @@ class RobustWrapper:
         return cmd
 
     @staticmethod
-    def get_cmd_rob(graph_dir, adv_file, out_file, mode, iterations = 1, number_of_blocked_nodes = None, seeds = 1, alpha=1):
+    def get_cmd_rob(graph_dir, adv_file, out_file, mode, lt, iterations = 1, number_of_blocked_nodes = None, seeds = 1, alpha=1):
         cmd = [ os.path.join(RobustWrapper.BIN_PATH,'Rob'),
                 '-d', graph_dir,
                 '-i', str(int(iterations)),
@@ -72,6 +74,7 @@ class RobustWrapper:
                 '-s', str(seeds),
                 '-c', str(alpha),
                 '-a', adv_file,
+                '-t', lt,
                 '-o', out_file]
         if number_of_blocked_nodes != None:
             cmd += ['-l', str(number_of_blocked_nodes)]

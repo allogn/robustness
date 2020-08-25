@@ -81,20 +81,21 @@ class ParallelRobustWrapper(RobustWrapper):
         imm_id = immunization_info['_id']
         self.all_cmds.append((self.get_cmd_dyn_imm(graph_dir, adv_file, out_file, beta, seeds, alpha), out_file, imm_id))
 
-    def add_rob(self, graph_dir, immunization_info, iterations, mode, number_of_blocked_nodes, seeds, alpha):
+    def add_rob(self, graph_dir, immunization_info, iterations, mode, number_of_blocked_nodes, seeds, alpha, lt):
         out_file = os.path.join(self.fm.get_data_path(), str(uuid.uuid4()) + ".json")
         adv_file = immunization_info['solution_path']
         imm_id = immunization_info['_id']
-        self.all_cmds.append((self.get_cmd_rob(graph_dir, adv_file, out_file, mode, iterations, number_of_blocked_nodes, seeds, alpha), out_file, imm_id))
+        self.all_cmds.append((self.get_cmd_rob(graph_dir, adv_file, out_file, mode, lt, iterations, number_of_blocked_nodes, seeds, alpha), out_file, imm_id))
 
     def add_imm(self, graph_dir, immunization_info, seeds):
         out_file = os.path.join(self.fm.get_data_path(), str(uuid.uuid4()) + ".json")
         imm_id = immunization_info['_id'] # for sticking to network
         self.all_cmds.append((self.get_cmd_imm(graph_dir, out_file, 0.2, seeds), out_file, imm_id))
 
-    def add_satgreedy(self, graph_dir, graph_id, epsilon, adv_set, gamma, number_of_seeds, number_of_blocked_nodes, solvers, dimbeta, alpha):
+    def add_satgreedy(self, graph_dir, graph_id, epsilon, adv_set, gamma, number_of_seeds, number_of_blocked_nodes, solvers, dimbeta, alpha, lt):
         out_file = os.path.join(self.fm.get_data_path(), str(uuid.uuid4()) + ".json")
-        self.all_cmds.append((self.get_cmd_satgreedy(graph_dir, epsilon, out_file, adv_set, 1, 0, gamma, number_of_seeds, number_of_blocked_nodes, solvers, dimbeta, alpha), out_file, graph_id))
+        self.all_cmds.append((self.get_cmd_satgreedy(graph_dir, epsilon, out_file, adv_set, 1, 0, gamma, number_of_seeds, 
+                                number_of_blocked_nodes, solvers, dimbeta, alpha, lt), out_file, graph_id))
 
     def add_simulation(self, graph_dir, seed_path, simulation_id):
         out_file = os.path.join(self.fm.get_data_path(), str(uuid.uuid4()) + ".json")
