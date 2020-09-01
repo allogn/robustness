@@ -577,6 +577,7 @@ public:
 
 				if (is_lt) {
 					double sum_of_income_edges = std::accumulate(probT[i].begin(), prob[i].end(), 0);
+					n_visit_edge+=probT[i].size();
 					double randDouble = sfmt_genrand_real1(&sfmtSeed);
 					if (randDouble <= sum_of_income_edges) {
 						// choose one incoming edge, otherwise don't choose any
@@ -587,10 +588,6 @@ public:
 						if (a[v] < 0) {
 							continue;
 						}
-						n_visit_edge++;
-						double randDouble = sfmt_genrand_real1(&sfmtSeed);
-						if (randDouble > probT[i][j])
-							continue;
 						if (visit[v])
 							continue;
 						if (!visit[v])
