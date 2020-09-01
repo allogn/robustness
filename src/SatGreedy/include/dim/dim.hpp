@@ -12,6 +12,7 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <exception>
+#include <random>
 #include "nheap.h"
 #include "Random123/threefry.h"
 
@@ -35,6 +36,8 @@ public:
 // Dynamic Influence Maximization
 class DIM {
 public:
+	bool is_lt;
+	std::default_random_engine generator;
 
 	set<int> V;
 	vector<int> Vvec;

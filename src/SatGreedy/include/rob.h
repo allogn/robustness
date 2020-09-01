@@ -116,18 +116,17 @@ class Rob {
         for (nid_t i = 0; i < g.n; i++) {
             if (blocked_nodes.find(i) != blocked_nodes.end()) continue;
             if (this->is_lt) {
-                for (nid_t j = 0; j < g.gT[i].size(); j++) {
-                    nid_t v = g.gT[i][j];
-                    if (blocked_nodes.find(v) != blocked_nodes.end()) continue;
-                    double sum_of_income_edges = std::accumulate(g.probT[v].begin(), g.probT[v].end(), 0);
-                    double randDouble = sfmt_genrand_real1(&sfmtSeed);
-                    if (randDouble <= sum_of_income_edges) {
-                        // choose one incoming edge, otherwise don't choose any
-                        std::discrete_distribution<nid_t> distribution(g.probT[v].begin(), g.probT[v].end());
-                        int inverse_incoming_edge_neigh = distribution(generator);
-                        active_edges[inverse_incoming_edge_neigh].push_front(v);
-                    } 
-                }
+                double sum_of_income_edges = std::accumulate(g.probT[i].begin(), g.probT[i].end(), 0.);
+                double randDouble = sfmt_genrand_real1(&sfmtSeed);
+                if (randDouble <= sum_of_income_edges) {
+                    // choose one incoming edge, otherwise don't choose any
+                    std::discrete_distribution<nid_t> distribution(g.probT[i].begin(), g.probT[i].end());
+                    int inverse_incoming_edge_neigh = g.gT[i][distribution(generator)];
+                    active_edges[inverse_incoming_edge_neigh].push_front(i);
+                    if (mode == DYN_GRAIL_MAX_TREE || mode == DYN_GRAIL_MAX_TREE_BIT) {
+                        reverse_active_edges[i].push_front(inverse_incoming_edge_neigh);
+                    }
+                } 
             } else {
                 for (nid_t j = 0; j < g.g[i].size(); j++) {
                     if (blocked_nodes.find(g.g[i][j]) != blocked_nodes.end()) continue;

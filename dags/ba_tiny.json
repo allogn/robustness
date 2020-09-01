@@ -9,7 +9,7 @@
 	},
 	"solver": {
 		"Rob": {
-			"mode": [0,5]
+			"mode": 0
 		}
 	},
     "problem": {

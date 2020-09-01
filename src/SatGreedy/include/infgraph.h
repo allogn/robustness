@@ -473,7 +473,7 @@ public:
 	long BuildHypergraphNode(nid_t uStart, nid_t hyperiiid, bool is_lt, long* W = nullptr)
 	{
 		if (is_lt) {
-			return this->BuildHypergraphNodeLT(uStart, hyperiiid, W);
+			throw "Not implemented";
 		}
 		long n_visit_edge = 1;
 		ASSERT((nid_t)hyperToNodes.size() > hyperiiid);
@@ -546,97 +546,8 @@ public:
         return 1.0*influence / hyperToNodes.size() * n;
 	}
 
-	long BuildHypergraphNodeBlockedLT(nid_t uStart, nid_t hyperiiid, std::vector<std::vector<nid_t>>& blocked_nodes)
-	{
-		long n_visit_edge = 1;
-		ASSERT((nid_t)hyperToNodes.size() > hyperiiid);
-		hyperToNodes[hyperiiid].push_back(uStart);
-
-		nid_t n_visit_mark = 0;
-
-		q.clear();
-		q.push_back(uStart);
-		ASSERT(n_visit_mark < n);
-		visit_mark[n_visit_mark++] = uStart;
-		visit[uStart] = true;
-		std::vector<nid_t> worst_candidate_nodes;
-		nid_t worst_nodes = INT_MAX;
-
-		vector<bool> nodes_with_edges_checked(n, false);
-		std::unordered_set<std::pair<nid_t, nid_t>, pair_hash> active_edges;
-
-		for (auto& a : blocked_nodes)
-		{
-			std::vector<nid_t> candidate_nodes;
-
-			if (a[uStart] < 0) {
-				q.clear(); // initial node is blocked
-			}
-			while (!q.empty())
-			{
-				nid_t expand = q.front();
-				q.pop_front();
-				nid_t i = expand;
-				for (nid_t j = 0; j < (nid_t)gT[i].size(); j++)
-				{
-					//int u=expand;
-					nid_t v = gT[i][j];
-					if (a[v] < 0) {
-						continue;
-					}
-
-					if (!nodes_with_edges_checked[v]) {
-						double sum_of_income_edges = std::accumulate(prob[v].begin(), prob[v].end(), 0);
-						double randDouble = sfmt_genrand_real1(&sfmtSeed);
-						if (randDouble <= sum_of_income_edges) {
-							// choose one incoming edge, otherwise don't choose any
-							std::discrete_distribution<nid_t> distribution(prob[v].begin(), prob[v].end());
-							int inverse_incoming_edge_neigh = distribution(generator);
-							active_edges.insert(std::make_pair(inverse_incoming_edge_neigh,v));
-						} 
-						nodes_with_edges_checked[v] = true;
-					}
-
-					if (active_edges.count(std::make_pair(i,v)) == 0) {
-						continue;
-					}
-
-					if (visit[v])
-						continue;
-					if (!visit[v])
-					{
-						ASSERT(n_visit_mark < n);
-						visit_mark[n_visit_mark++] = v;
-						visit[v] = true;
-					}
-					q.push_back(v);
-					candidate_nodes.push_back(v);
-				}
-			}
-			for (nid_t i = 0; i < n_visit_mark; i++)
-				visit[visit_mark[i]] = false;
-			if (worst_nodes > candidate_nodes.size()) {
-				worst_candidate_nodes = candidate_nodes;
-				worst_nodes = candidate_nodes.size();
-				INFO("Updated worst: ", worst_nodes);
-			}
-		}
-		INFO("Added edge with nodes: ", worst_candidate_nodes.size());
-		ASSERT(worst_nodes == worst_candidate_nodes.size());
-		ASSERT((nid_t)hyperToNodes.size() > hyperiiid);
-		hyperToNodes[hyperiiid] = worst_candidate_nodes;
-
-
-		hyperToReward[hyperiiid] = 1;
-
-		return n_visit_edge;
-	}
-
 	long BuildHypergraphNodeBlocked(nid_t uStart, nid_t hyperiiid, std::vector<std::vector<nid_t>>& blocked_nodes, bool is_lt)
 	{
-		if (is_lt) {
-			return this->BuildHypergraphNodeBlockedLT(uStart, hyperiiid, blocked_nodes);
-		}
 
 		long n_visit_edge = 1;
 		ASSERT((nid_t)hyperToNodes.size() > hyperiiid);
@@ -663,28 +574,59 @@ public:
 				nid_t expand = q.front();
 				q.pop_front();
 				nid_t i = expand;
-				for (nid_t j = 0; j < (nid_t)gT[i].size(); j++)
-				{
-					//int u=expand;
-					nid_t v = gT[i][j];
-					if (a[v] < 0) {
-						continue;
-					}
-					n_visit_edge++;
+
+				if (is_lt) {
+					double sum_of_income_edges = std::accumulate(probT[i].begin(), prob[i].end(), 0);
 					double randDouble = sfmt_genrand_real1(&sfmtSeed);
-					if (randDouble > probT[i][j])
-						continue;
-					if (visit[v])
-						continue;
-					if (!visit[v])
+					if (randDouble <= sum_of_income_edges) {
+						// choose one incoming edge, otherwise don't choose any
+						std::discrete_distribution<nid_t> distribution(probT[i].begin(), probT[i].end());
+						int j = distribution(generator);
+						int v = gT[i][j];
+
+						if (a[v] < 0) {
+							continue;
+						}
+						n_visit_edge++;
+						double randDouble = sfmt_genrand_real1(&sfmtSeed);
+						if (randDouble > probT[i][j])
+							continue;
+						if (visit[v])
+							continue;
+						if (!visit[v])
+						{
+							ASSERT(n_visit_mark < n);
+							visit_mark[n_visit_mark++] = v;
+							visit[v] = true;
+						}
+						q.push_back(v);
+						candidate_nodes.push_back(v);
+					} 
+				} else {
+					for (nid_t j = 0; j < (nid_t)gT[i].size(); j++)
 					{
-						ASSERT(n_visit_mark < n);
-						visit_mark[n_visit_mark++] = v;
-						visit[v] = true;
+						//int u=expand;
+						nid_t v = gT[i][j];
+						if (a[v] < 0) {
+							continue;
+						}
+						n_visit_edge++;
+						double randDouble = sfmt_genrand_real1(&sfmtSeed);
+						if (randDouble > probT[i][j])
+							continue;
+						if (visit[v])
+							continue;
+						if (!visit[v])
+						{
+							ASSERT(n_visit_mark < n);
+							visit_mark[n_visit_mark++] = v;
+							visit[v] = true;
+						}
+						q.push_back(v);
+						candidate_nodes.push_back(v);
 					}
-					q.push_back(v);
-					candidate_nodes.push_back(v);
 				}
+				
 			}
 			for (nid_t i = 0; i < n_visit_mark; i++)
 				visit[visit_mark[i]] = false;

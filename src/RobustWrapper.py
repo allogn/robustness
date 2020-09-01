@@ -32,8 +32,8 @@ class RobustWrapper:
             rc = process.poll()
             if rc != None and rc != 0:
                 print("Terminated with error ", rc)
-                return -1
-            return 1
+                return -1, None
+            return 1, None
         else:
             output, errors = process.communicate(timeout = timeout)
             return output, errors

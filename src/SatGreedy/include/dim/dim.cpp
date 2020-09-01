@@ -6,6 +6,7 @@ void DIM::init() {
 	naive_operation = false;
 	TOT = 0;
 	beta = 1;
+	is_lt = false;
 
 	_adjust();
 }
@@ -262,18 +263,47 @@ void DIM::_expand(ULL at, int z) {
 			int v = Q.front();
 			Q.pop();
 			index[v].insert(at);
-			for (auto it = rs.lower_bound(make_pair(v, 0));
-					it != rs.end() && it->first.first == v; it++) {
-				int u = it->first.second;
-				double p = it->second;
-				double x = _gen_double(at, u, v);
-				if (x < p) { // (u, v) is live.
+
+			if (is_lt) {
+				double sum_of_incoming = 0;
+				std::vector<double> probs;
+				std::vector<int> neighs;
+				for (auto it = rs.lower_bound(make_pair(v, 0));
+						it != rs.end() && it->first.first == v; it++) {
+					int u = it->first.second;
+					double p = it->second;
+					probs.push_back(p);
+					neighs.push_back(u);
+					sum_of_incoming += p;
+				}
+				double x = _gen_double(at, 0, v); // no idea how this works, but lets say 0 here
+				if (x < sum_of_incoming) {
+					// choose one edge in random
+					std::discrete_distribution<int> distribution(probs.begin(), probs.end());
+					int u = neighs[distribution(generator)];
+
 					hs[at].x.push_back(make_pair(v, u));
 					if (!hs[at].H.count(u)) {
 						Q.push(u);
 						hs[at].H.insert(u);
 						_weight(at, +1 + ideg[u]);
 						hs[at].par.push_back(make_pair(v, u));
+					}
+				} // else don't choose any edge
+			} else {
+				for (auto it = rs.lower_bound(make_pair(v, 0));
+						it != rs.end() && it->first.first == v; it++) {
+					int u = it->first.second;
+					double p = it->second;
+					double x = _gen_double(at, u, v);
+					if (x < p) { // (u, v) is live.
+						hs[at].x.push_back(make_pair(v, u));
+						if (!hs[at].H.count(u)) {
+							Q.push(u);
+							hs[at].H.insert(u);
+							_weight(at, +1 + ideg[u]);
+							hs[at].par.push_back(make_pair(v, u));
+						}
 					}
 				}
 			}

@@ -54,7 +54,7 @@ int main(int argn, char **argv) {
     auto_cpu_timer timer; // prints time on destruction
     arg.mc_iterations = 1000;
     arg.lt_model = lt_model == 1;
-
+    
     if (adv_file != "") {
         Imm imm(arg);
         auto node_sequence = read_node_sequence(adv_file);
@@ -62,6 +62,7 @@ int main(int argn, char **argv) {
 
         DIM dim;
         dim.init(); // Call at the beginning
+        dim.is_lt = arg.lt_model;
         dim.set_beta(arg.epsilon);
 
         cpu_timer timer;
