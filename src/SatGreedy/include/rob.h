@@ -113,15 +113,24 @@ class Rob {
             std::forward_list<nid_t> empty_list;
             active_edges[i] = empty_list; // touch. important because mydag builds active_nodes based on existance in active_edges
         }
+        int a = 0;
         for (nid_t i = 0; i < g.n; i++) {
             if (blocked_nodes.find(i) != blocked_nodes.end()) continue;
             if (this->is_lt) {
-                double sum_of_income_edges = std::accumulate(g.probT[i].begin(), g.probT[i].end(), 0.);
+                std::vector<double> non_blocked_probs;
+                std::vector<int> non_blocked_neighs;
+                
+                for (nid_t j = 0; j < g.gT[i].size(); j++) {
+                    if (blocked_nodes.find(g.gT[i][j]) != blocked_nodes.end()) continue;
+                    non_blocked_probs.push_back(g.probT[i][j]);
+                    non_blocked_neighs.push_back(g.gT[i][j]);
+                }
+                double sum_of_income_edges = std::accumulate(non_blocked_probs.begin(), non_blocked_probs.end(), 0.);
                 double randDouble = sfmt_genrand_real1(&sfmtSeed);
-                if (randDouble <= sum_of_income_edges) {
+                if (randDouble < sum_of_income_edges) {
                     // choose one incoming edge, otherwise don't choose any
-                    std::discrete_distribution<nid_t> distribution(g.probT[i].begin(), g.probT[i].end());
-                    int inverse_incoming_edge_neigh = g.gT[i][distribution(generator)];
+                    std::discrete_distribution<nid_t> distribution(non_blocked_probs.begin(), non_blocked_probs.end());
+                    int inverse_incoming_edge_neigh = non_blocked_neighs[distribution(generator)];
                     active_edges[inverse_incoming_edge_neigh].push_front(i);
                     if (mode == DYN_GRAIL_MAX_TREE || mode == DYN_GRAIL_MAX_TREE_BIT) {
                         reverse_active_edges[i].push_front(inverse_incoming_edge_neigh);
@@ -689,6 +698,7 @@ public:
                     high = number_of_blocked_nodes+1;
                 }
                 for (int q = low; q < high; q++) {
+                    cout << "blocked "<< q << endl;
                     update_blocked_nodes_set(q);
                     build_active_edges();
 
@@ -710,9 +720,10 @@ public:
                         default:
                             throw std::runtime_error("Impossible");
                     }
-
+                    break;
                 }
                 it++;
+                break;
             } else {
                 build_active_edges();
                 if (mode == DYN_BOTUP_MAX_TREE) {
