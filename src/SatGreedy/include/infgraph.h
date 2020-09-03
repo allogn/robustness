@@ -576,10 +576,10 @@ public:
 				nid_t i = expand;
 
 				if (is_lt) {
-					double sum_of_income_edges = std::accumulate(probT[i].begin(), prob[i].end(), 0);
+					double sum_of_income_edges = std::accumulate(probT[i].begin(), probT[i].end(), 0.);
 					n_visit_edge+=probT[i].size();
 					double randDouble = sfmt_genrand_real1(&sfmtSeed);
-					if (randDouble <= sum_of_income_edges) {
+					if (randDouble < sum_of_income_edges) {
 						// choose one incoming edge, otherwise don't choose any
 						std::discrete_distribution<nid_t> distribution(probT[i].begin(), probT[i].end());
 						int j = distribution(generator);

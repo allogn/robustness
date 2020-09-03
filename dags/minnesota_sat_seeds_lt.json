@@ -2,7 +2,7 @@
 	"data": {
 		"graph_type": "minnesota",
 		"both_directions": 1,
-		"weight_scale": [0.5, [0.1, 0.3, 0.6, 0.7, 0.75, 0.8, 0.85, 0.9]],
+		"weight_scale": -2,
 		"random_weight": 1
 		},
 	"solver": {

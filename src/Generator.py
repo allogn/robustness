@@ -113,11 +113,25 @@ class Generator:
     @staticmethod # used in tests
     def assign_weights(G, weight_scale, random_weight):
         if random_weight:
-            for e in G.edges():
-                G[e[0]][e[1]]['weight'] = np.random.random()*weight_scale
+            if weight_scale == -2:
+                for e in G.edges():
+                    G[e[0]][e[1]]['weight'] = np.random.random()
+            else:
+                for e in G.edges():
+                    G[e[0]][e[1]]['weight'] = np.random.random()*weight_scale
         else:
             for e in G.edges():
-                G[e[0]][e[1]]['weight'] = weight_scale
+                G[e[0]][e[1]]['weight'] = weight_scale if weight_scale > 0 else 1
+
+        # normalize for LT
+        if weight_scale == -2:
+            for n in G.nodes():
+                p = 0
+                for in_n in G.predecessors(n):
+                    p += G[in_n][n]['weight']
+                for in_n in G.predecessors(n):
+                    G[in_n][n]['weight'] = G[in_n][n]['weight'] / p
+
         return G
 
     @staticmethod
