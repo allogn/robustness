@@ -2,11 +2,11 @@
 	"data": {
 		"graph_type": "powerlaw_cluster",
 		"both_directions": 1,
-		"weight_scale": 0.05,
+		"weight_scale": 0.3,
 		"random_weight": 0,
-		"n": 3000,
-		"p": 0.4,
-		"mm": 10
+		"n": 15000,
+		"p": 0.1,
+		"mm": 2
 	},
   "solver": {
     "Rob": {

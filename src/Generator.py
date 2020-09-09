@@ -132,9 +132,15 @@ class Generator:
                 for in_n in G.predecessors(n):
                     G[in_n][n]['weight'] = G[in_n][n]['weight'] / p
 
+        # divide by in-degree
+        for n in G.nodes():
+            x = float(G.in_degree(n))
+            for in_n in G.predecessors(n):
+                G[in_n][n]['weight'] = G[in_n][n]['weight'] / x
+
         # assert sum to 1 for LT, comment out when using IC
         for n in G.nodes():
-            assert np.sum([G[in_n][n]['weight'] for in_n in G.predecessors(n)]) <= 1
+            assert np.sum([G[in_n][n]['weight'] for in_n in G.predecessors(n)]) <= 1, G.in_degree(n)
 
         return G
 
