@@ -1,0 +1,19 @@
+{
+	"data": {
+		"graph_type": "brightkite",
+		"weight_scale": 0.6,
+		"random_weight": 0
+	},
+	"solver": {
+		"Rob": {
+			"mode": [0,5]
+		},
+		"SatGreedy": {}
+	},
+	"problem": {
+		"seeds": 100,
+		"alpha": 1.075,
+		"lt_model": 1
+	},
+	"full_rerun": 1
+}
