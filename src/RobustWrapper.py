@@ -20,7 +20,6 @@ class RobustWrapper:
     @staticmethod
     def run_cmd(cmd, verbose, timeout):
         process = Popen(cmd, stdout=PIPE, stderr=PIPE)
-
         if verbose:
             print("Running:$", " ".join(cmd))
             for line in process.stdout:

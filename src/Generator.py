@@ -93,15 +93,54 @@ class Generator:
                     weight = weights[i]
                 G = self.assign_weights(G, self.params["weight_scale"], self.params["random_weight"])
 
+            assort_c = -1
+            if self.params.get("assort", -1) >= 0:
+                G, assort_c = self.improve_assort(G, self.params["assort"])
+
             G.graph = {}
             G.graph['graph_id'] = self.gen_graph_id()
             G.graph.update(self.params)
             G.graph['weight_scale'] = weight
+            G.graph['assort'] = assort_c
             G.graph['m'] = G.number_of_edges()
             if "n" in self.params:
                 assert(len(G) == self.params["n"])
             assert(nx.is_directed(G))
             yield G
+
+    def improve_assort(self, G, iter_param):
+        c = nx.degree_assortativity_coefficient(G)
+        if iter_param > 0:
+            for i in range(iter_param):
+                c = nx.degree_assortativity_coefficient(G)
+                while True:
+                    # try to rewire a random edge
+                    l = [e for e in G.edges(data=True)]
+
+                    G2 = G.__class__()
+                    G2.add_nodes_from(G)
+                    G2.add_edges_from(G.edges(data=True))
+
+                    e1, e2 = 0, 0
+                    while True:
+                        ei = np.random.choice(len(l),2,replace=False)
+                        e1 = l[ei[0]]
+                        e2 = l[ei[1]]
+                        if G2.has_edge(e1[0],e2[1]) or G2.has_edge(e2[0],e1[1]):
+                            continue
+                        G2.remove_edge(e1[0],e1[1])
+                        G2.remove_edge(e2[0],e2[1])
+                        G2.add_edge(e1[0],e2[1],weight=e1[2]['weight'])
+                        G2.add_edge(e2[0],e1[1],weight=e2[2]['weight'])
+                        new_c = nx.degree_assortativity_coefficient(G2)
+                        break
+
+                    if new_c > c:
+                        G = G2
+                        c = new_c
+                        print("Assort coef improved {} -> {}".format(c,new_c))
+                        break
+        return G, c
 
     def get(self):
         # caching makes it possible to get graph and save to adjlist
@@ -123,24 +162,24 @@ class Generator:
             for e in G.edges():
                 G[e[0]][e[1]]['weight'] = weight_scale if weight_scale > 0 else 1
 
-        # normalize for LT
-        if weight_scale == -2:
-            for n in G.nodes():
-                p = 0
-                for in_n in G.predecessors(n):
-                    p += G[in_n][n]['weight']
-                for in_n in G.predecessors(n):
-                    G[in_n][n]['weight'] = G[in_n][n]['weight'] / p
+        ###### normalize for LT, comment out when using IC
+        # if weight_scale == -2:
+        #     for n in G.nodes():
+        #         p = 0
+        #         for in_n in G.predecessors(n):
+        #             p += G[in_n][n]['weight']
+        #         for in_n in G.predecessors(n):
+        #             G[in_n][n]['weight'] = G[in_n][n]['weight'] / p
 
-        # divide by in-degree
-        for n in G.nodes():
-            x = float(G.in_degree(n))
-            for in_n in G.predecessors(n):
-                G[in_n][n]['weight'] = G[in_n][n]['weight'] / x
+        ###### divide by in-degree, comment out when using IC
+        # for n in G.nodes():
+        #     x = float(G.in_degree(n))
+        #     for in_n in G.predecessors(n):
+        #         G[in_n][n]['weight'] = G[in_n][n]['weight'] / x
 
-        # assert sum to 1 for LT, comment out when using IC
-        for n in G.nodes():
-            assert np.sum([G[in_n][n]['weight'] for in_n in G.predecessors(n)]) <= 1, G.in_degree(n)
+        ####### assert sum to 1 for LT, comment out when using IC
+        # for n in G.nodes():
+        #     assert np.sum([G[in_n][n]['weight'] for in_n in G.predecessors(n)]) <= 1, G.in_degree(n)
 
         return G
 

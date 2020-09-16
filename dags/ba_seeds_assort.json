@@ -1,0 +1,22 @@
+{
+	"data": {
+		"graph_type": "powerlaw_cluster",
+		"both_directions": 1,
+		"weight_scale": 0.2,
+		"random_weight": 0,
+		"n": 1000,
+		"p": 0.4,
+		"mm": 10,
+		"assort": [0, [1, 20]]
+	},
+  "solver": {
+    "Rob": {
+      "mode": [0, 5]
+    },
+    "SatGreedy": {}
+  },
+	"problem": {
+		"seeds": 5
+	},
+	"full_rerun": 1
+}
